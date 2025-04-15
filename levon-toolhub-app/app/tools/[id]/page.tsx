@@ -38,7 +38,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
+  DropdownMenuLabel
 } from "@/components/ui/dropdown-menu"
 import {
   Dialog,
@@ -241,6 +242,61 @@ const reviewsData = [
   }
 ];
 
+// 社交分享组件
+function ShareButtons({ toolName }: { toolName: string }) {
+  const [shareUrl, setShareUrl] = useState('');
+  
+  useEffect(() => {
+    // 在客户端渲染时设置URL
+    setShareUrl(window.location.href);
+  }, []);
+  
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" className="h-12 flex-1">
+          <Share2 className="h-5 w-5 mr-2" />
+          分享
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuItem onClick={() => {
+          if (navigator.clipboard) {
+            navigator.clipboard.writeText(shareUrl);
+          }
+        }}>
+          <Copy className="h-4 w-4 mr-2" />
+          复制链接
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`} target="_blank">
+            <Facebook className="h-4 w-4 mr-2" />
+            分享到Facebook
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(`Check out ${toolName}!`)}`} target="_blank">
+            <Twitter className="h-4 w-4 mr-2" />
+            分享到Twitter
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}`} target="_blank">
+            <Linkedin className="h-4 w-4 mr-2" />
+            分享到LinkedIn
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href={`mailto:?subject=${encodeURIComponent(`分享工具：${toolName}`)}&body=${encodeURIComponent(`我发现了一个很棒的工具: ${shareUrl}`)}`}>
+            <Mail className="h-4 w-4 mr-2" />
+            通过邮件分享
+          </Link>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
 export default function ToolDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -370,44 +426,7 @@ export default function ToolDetailPage() {
                   )}
                 </Button>
                 
-                <DropdownMenu open={showShareMenu} onOpenChange={setShowShareMenu}>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="h-12 flex-1">
-                      <Share2 className="h-5 w-5 mr-2" />
-                      分享
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuItem onClick={() => {navigator.clipboard.writeText(window.location.href)}}>
-                      <Copy className="h-4 w-4 mr-2" />
-                      复制链接
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`} target="_blank">
-                        <Facebook className="h-4 w-4 mr-2" />
-                        分享到Facebook
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(`Check out ${toolData.name}!`)}`} target="_blank">
-                        <Twitter className="h-4 w-4 mr-2" />
-                        分享到Twitter
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(window.location.href)}`} target="_blank">
-                        <Linkedin className="h-4 w-4 mr-2" />
-                        分享到LinkedIn
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href={`mailto:?subject=${encodeURIComponent(`Check out ${toolData.name}`)}&body=${encodeURIComponent(`I found this amazing tool: ${window.location.href}`)}`}>
-                        <Mail className="h-4 w-4 mr-2" />
-                        通过邮件分享
-                      </Link>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <ShareButtons toolName={toolData.name} />
                 
                 <Dialog>
                   <DialogTrigger asChild>

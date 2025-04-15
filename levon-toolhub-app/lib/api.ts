@@ -16,6 +16,19 @@ export type Tool = {
   updatedAt: string
 }
 
+export type ToolBrief = {
+  id: number
+  name: string
+  logo: string
+  shortDescription: string
+  websiteUrl: string
+  categoryId: number
+  subCategoryId: number | null
+  subCategoryName: string | null
+  priceType: number // 1=免费，2=付费，3=部分免费
+  isNew: number // 0=否，1=是
+}
+
 export type Category = {
   id: number
   name: string
@@ -31,11 +44,25 @@ export type Category = {
   newToolsThisMonth: number
 }
 
+// API返回的子分类类型
 export type Subcategory = {
+  id: number
+  categoryId: number
+  name: string
+  code: string
+  description: string
+  iconKey: string
+  sortOrder: number
+  toolCount: number
+}
+
+// 本地mock数据使用的子分类类型
+export type SubcategoryMock = {
   id: string
   name: string
   count: number
   categoryId: string
+  icon?: string
 }
 
 export type Article = {
@@ -69,6 +96,13 @@ export type Review = {
   date: string
   likes: number
   dislikes: number
+}
+
+export type CursorPageResult<T> = {
+  list: T[]
+  hasMore: boolean
+  nextCursor: string | null
+  total: number
 }
 
 // Mock data
@@ -262,7 +296,7 @@ const categories: Category[] = [
   },
 ]
 
-const subcategories: Record<string, Subcategory[]> = {
+const subcategories: Record<string, SubcategoryMock[]> = {
   "1": [ // AI Tools (id: 1)
     { id: "image-generation", name: "Image Generation", count: 42, categoryId: "1" },
     { id: "writing-content", name: "Writing & Content", count: 38, categoryId: "1" },
@@ -467,15 +501,31 @@ export async function getCategories(): Promise<Category[]> {
   return categories
 }
 
+/**
+ * 将本地mock子分类数据转换为API格式
+ */
+function convertMockSubcategories(mockSubcategories: SubcategoryMock[]): Subcategory[] {
+  return mockSubcategories.map((item, index) => ({
+    id: parseInt(item.id.split('-').pop() || (index + 1).toString()),
+    categoryId: parseInt(item.categoryId),
+    name: item.name,
+    code: item.id,
+    description: `${item.name}相关工具`,
+    iconKey: item.icon || item.id,
+    sortOrder: index + 1,
+    toolCount: item.count
+  }));
+}
+
 export async function getSubcategories(categoryId: string | number): Promise<Subcategory[]> {
   // 将categoryId转为字符串以确保兼容性
   const categoryIdStr = typeof categoryId === 'number' ? categoryId.toString() : categoryId;
   
   // 首先尝试使用数字ID，如果没有找到，则尝试使用code作为键
-  let result = subcategories[categoryIdStr];
+  let mockSubcategories = subcategories[categoryIdStr];
   
   // 如果没有直接找到，可能传入的是旧的分类code，尝试兼容处理
-  if (!result) {
+  if (!mockSubcategories) {
     // 这里可以添加API调用逻辑，当实现后端接口时
     // 例如: return fetch(`/api/category/${categoryId}/subcategories`).then(res => res.json());
     
@@ -483,8 +533,8 @@ export async function getSubcategories(categoryId: string | number): Promise<Sub
     console.warn(`No subcategories found directly for ID ${categoryIdStr}, trying legacy keys`);
   }
   
-  // 移除不必要的延迟
-  return result || [];
+  // 将mock数据转换为API格式并返回
+  return convertMockSubcategories(mockSubcategories || []);
 }
 
 export async function getToolsByCategory(categoryId: string): Promise<Tool[]> {
@@ -524,31 +574,169 @@ export async function searchTools(query: string): Promise<Tool[]> {
   )
 }
 
+// 添加API基础URL常量
+const API_BASE_URL = 'http://127.0.0.1:8022';
+
 export async function getCategoryById(categoryId: number): Promise<Category | null> {
   try {
-    // 首先尝试调用真实API接口，移除不必要的延迟
-    const response = await fetch(`/api/tool/category/${categoryId}`);
+    // 直接调用子分类接口，该接口已包含分类信息
+    const result = await getCategorySubcategories(categoryId);
     
-    // 检查响应状态
-    if (!response.ok) {
-      // 如果API调用失败，使用本地mock数据
-      console.warn(`API call failed with status ${response.status}, using mock data`);
-      
-      // 使用mock URL进行测试，移除不必要的延迟
-      const mockResponse = await fetch(`http://127.0.0.1:4523/m1/6209085-5902477-default/tool/category/${categoryId}`);
-      if (!mockResponse.ok) {
-        throw new Error(`Mock API call failed with status ${mockResponse.status}`);
-      }
-      
-      const result = await mockResponse.json();
-      return result.data;
+    // 返回分类信息部分
+    if (result && result.categoryInfo) {
+      return result.categoryInfo;
     }
     
-    // 正常返回API结果
-    const result = await response.json();
-    return result.data;
+    return null;
   } catch (error) {
     console.error("Error fetching category:", error);
     return null;
+  }
+}
+
+export async function getCategorySubcategories(categoryId: number): Promise<{categoryInfo: Category, subCategories: Subcategory[]}> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/tool/category/${categoryId}/subcategory`);
+    
+    if (!response.ok) {
+      // 开发环境下使用mock数据
+      console.warn(`API call failed with status ${response.status}, using mock data`);
+      
+      // 返回mock数据并转换格式
+      const mockSubcategories = subcategories[categoryId.toString()] || [];
+      return {
+        categoryInfo: categories.find(c => c.id === categoryId) || categories[0],
+        subCategories: convertMockSubcategories(mockSubcategories)
+      };
+    }
+    
+    const result = await response.json();
+    return result.data;
+  } catch (error) {
+    console.error("Error fetching category subcategories:", error);
+    // 出错时返回mock数据
+    const mockSubcategories = subcategories[categoryId.toString()] || [];
+    return {
+      categoryInfo: categories.find(c => c.id === categoryId) || categories[0],
+      subCategories: convertMockSubcategories(mockSubcategories)
+    };
+  }
+}
+
+export async function getCategoryTools(
+  categoryId: number, 
+  options: {
+    cursor?: string; 
+    size?: number; 
+    sort?: number; // 1=最新，2=最热
+    priceType?: number; // 1=免费，2=付费，3=部分免费
+    subCategoryId?: number;
+  } = {}
+): Promise<CursorPageResult<ToolBrief>> {
+  try {
+    // 构建查询参数
+    const params = new URLSearchParams();
+    if (options.cursor) params.append('cursor', options.cursor);
+    if (options.size) params.append('size', options.size.toString());
+    if (options.sort) params.append('sort', options.sort.toString());
+    if (options.priceType) params.append('priceType', options.priceType.toString());
+    if (options.subCategoryId) params.append('subCategoryId', options.subCategoryId.toString());
+    
+    const url = `${API_BASE_URL}/api/tool/category/${categoryId}/tools${params.toString() ? `?${params.toString()}` : ''}`;
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      console.warn(`API call failed with status ${response.status}, using mock data`);
+      
+      // 返回mock数据
+      const mockTools = popularTools
+        .filter(tool => tool.category.toLowerCase().replace(/\s+/g, "-") === "ai-tools")
+        .map(tool => ({
+          id: tool.id,
+          name: tool.name,
+          logo: tool.icon,
+          shortDescription: tool.description,
+          websiteUrl: tool.url,
+          categoryId: 1,
+          subCategoryId: null,
+          subCategoryName: null,
+          priceType: tool.isFree ? 1 : 2,
+          isNew: tool.isNew ? 1 : 0
+        }));
+      
+      return {
+        list: mockTools,
+        hasMore: false,
+        nextCursor: null,
+        total: mockTools.length
+      };
+    }
+    
+    const result = await response.json();
+    return result.data;
+  } catch (error) {
+    console.error("Error fetching category tools:", error);
+    
+    // 出错时返回mock数据
+    const mockTools = popularTools
+      .filter(tool => tool.category.toLowerCase().replace(/\s+/g, "-") === "ai-tools")
+      .map(tool => ({
+        id: tool.id,
+        name: tool.name,
+        logo: tool.icon,
+        shortDescription: tool.description,
+        websiteUrl: tool.url,
+        categoryId: 1,
+        subCategoryId: null,
+        subCategoryName: null,
+        priceType: tool.isFree ? 1 : 2,
+        isNew: tool.isNew ? 1 : 0
+      }));
+    
+    return {
+      list: mockTools,
+      hasMore: false,
+      nextCursor: null,
+      total: mockTools.length
+    };
+  }
+}
+
+// 添加导出标记确保函数被正确导出
+export async function fetchCategoryTools(categoryId: number, params: URLSearchParams): Promise<any> {
+  try {
+    // 检查并打印价格筛选参数
+    const priceType = params.get('priceType');
+    const subCategoryId = params.get('subCategoryId');
+    console.log(`API请求参数 - 分类ID: ${categoryId}, 价格类型: ${priceType}, 子分类ID: ${subCategoryId}`);
+    
+    const apiUrl = `http://127.0.0.1:8022/api/tool/category/${categoryId}/tools?${params.toString()}`;
+    console.log("请求API:", apiUrl);
+    
+    const response = await fetch(apiUrl);
+    
+    if (!response.ok) {
+      throw new Error(`API请求失败: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    console.log(`API响应 - 状态码: ${result.code}, 工具数量: ${result.data?.list?.length || 0}`);
+    return result; // 返回完整的响应对象，包含code, message, data等
+  } catch (error) {
+    console.error("获取工具列表失败:", error);
+    
+    // 简单返回错误信息，不再回退到mock数据
+    return {
+      code: 500,
+      message: "请求失败",
+      data: {
+        list: [],
+        hasMore: false,
+        nextCursor: null,
+        total: 0
+      },
+      success: false,
+      timestamp: new Date().toISOString()
+    };
   }
 }

@@ -21,4 +21,10 @@ public interface ToolService extends IService<Tool> {
      * @return 主分类及其工具列表DTO
      */
     CursorPageResult<ToolBriefResponse> getCategoryTools(Long categoryId, ToolPageRequest request);
+    
+    /**
+     * 刷新工具缓存
+     * 手动触发缓存刷新，清除所有工具相关缓存
+     */
+    void refreshToolCache();
 }

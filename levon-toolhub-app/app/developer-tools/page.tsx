@@ -1,101 +1,123 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { CategoryHeader } from "@/components/category/category-header"
 import { CategorySidebar } from "@/components/category/category-sidebar"
 import { ToolGrid } from "@/components/category/tool-grid"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import { getCategoryById, getCategorySubcategories, Category } from "@/lib/api"
 
 export default function DeveloperToolsPage() {
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1)
-  const [toolsPerPage] = useState(12)
+  const [toolsPerPage] = useState(25)
   const [totalTools, setTotalTools] = useState(0)
+  const [priceFilter, setPriceFilter] = useState<number | null>(null)
+  const [sortOption, setSortOption] = useState<number>(1) // 默认为1（最新）
+  const [category, setCategory] = useState<Category | null>(null)
+  const [loading, setLoading] = useState(true)
   
-  // 计算总页数
-  const totalPages = Math.ceil(totalTools / toolsPerPage)
+  // 获取分类数据
+  useEffect(() => {
+    const fetchCategoryData = async () => {
+      setLoading(true)
+      try {
+        // 开发者工具的ID是4
+        const result = await getCategorySubcategories(4)
+        if (result && result.categoryInfo) {
+          setCategory(result.categoryInfo)
+          setTotalTools(result.categoryInfo.toolCount)
+        }
+      } catch (error) {
+        console.error("Error fetching category data:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    fetchCategoryData()
+  }, [])
   
-  // 处理页面切换
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-  
-  // 从ToolGrid获取工具总数的回调函数
   const handleToolsCountUpdate = (count: number) => {
     setTotalTools(count)
   }
   
-  // 渲染分页控件
-  const renderPagination = () => {
-    if (totalPages <= 1) return null
+  const handlePriceFilterChange = (value: number | null) => {
+    console.log(`DeveloperTools页面接收到价格筛选变化: ${value}`);
+    setPriceFilter(value);
+  }
+
+  // 处理排序方式变化
+  const handleSortChange = (value: number) => {
+    console.log(`DeveloperTools页面接收到排序方式变化: ${value}`);
+    setSortOption(value);
+  }
+
+  // 格式化渐变色
+  const formatGradient = () => {
+    if (!category) return "from-gray-700 to-gray-900" // 默认渐变
     
+    // 添加前缀
+    const fromColor = category.bgColorStart.includes("from-") 
+      ? category.bgColorStart 
+      : `from-${category.bgColorStart}`
+      
+    const toColor = category.bgColorEnd.includes("to-")
+      ? category.bgColorEnd
+      : `to-${category.bgColorEnd}`
+      
+    return `${fromColor} ${toColor}`
+  }
+
+  if (loading) {
     return (
-      <div className="flex justify-center items-center space-x-2 mt-8">
-        <Button 
-          variant="outline" 
-          size="icon"
-          disabled={currentPage === 1}
-          onClick={() => handlePageChange(currentPage - 1)}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        
-        {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-          // 如果页数超过5页，显示当前页附近的页码
-          let pageToShow = i + 1;
-          if (totalPages > 5 && currentPage > 3) {
-            pageToShow = Math.min(currentPage - 2 + i, totalPages);
-          }
-          return (
-            <Button
-              key={pageToShow}
-              variant={currentPage === pageToShow ? "default" : "outline"}
-              size="sm"
-              onClick={() => handlePageChange(pageToShow)}
-            >
-              {pageToShow}
-            </Button>
-          );
-        })}
-        
-        <Button 
-          variant="outline" 
-          size="icon"
-          disabled={currentPage === totalPages}
-          onClick={() => handlePageChange(currentPage + 1)}
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="space-y-8 w-full max-w-6xl">
+          <div className="h-64 bg-gray-200 animate-pulse rounded-xl"></div>
+          <div className="flex gap-8">
+            <div className="w-64 h-screen bg-gray-100 animate-pulse rounded-xl"></div>
+            <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="h-72 bg-gray-200 animate-pulse rounded-xl"></div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     )
   }
 
   return (
     <div className="min-h-screen flex flex-col">
-      <CategoryHeader
-        title="开发者工具"
-        description="提升开发效率和代码质量的必备工具集"
-        totalTools={205}
-        newTools={18}
-        backgroundImage="/placeholder.svg?height=300&width=1200"
-      />
+      {category && (
+        <CategoryHeader
+          title={category.name}
+          description={category.description}
+          totalTools={category.toolCount}
+          newTools={category.newToolsThisMonth}
+          backgroundImage={category.background || "/placeholder.svg?height=300&width=1200"}
+          gradientClass={formatGradient()}
+        />
+      )}
       <main className="flex-grow container mx-auto py-8 px-4">
         <div className="flex flex-col md:flex-row gap-8">
           <CategorySidebar 
-            category="developer-tools" 
+            category={4} 
             onSubcategoryChange={setSelectedSubcategory}
+            onPriceFilterChange={handlePriceFilterChange}
+            onSortChange={handleSortChange}
+            sortOption={sortOption}
           />
           <ToolGrid 
             category="developer-tools" 
             subcategory={selectedSubcategory}
-            page={currentPage}
+            page={1}
             itemsPerPage={toolsPerPage}
             onCountUpdate={handleToolsCountUpdate}
+            priceFilter={priceFilter}
+            sortOption={sortOption}
           />
         </div>
-        {renderPagination()}
       </main>
     </div>
   )

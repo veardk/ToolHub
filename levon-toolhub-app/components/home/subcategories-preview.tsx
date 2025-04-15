@@ -112,14 +112,14 @@ export function SubcategoriesPreview() {
         {Object.keys(subcategories).map((category) => (
           <TabsContent key={category} value={category} className="mt-0">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {subcategories[category]?.slice(0, 3).map((subcat) => (
-                <Card key={subcat.id} className="overflow-hidden">
+              {subcategories[category]?.slice(0, 3).map((subcat, index) => (
+                <Card key={subcat.id || `${category}-subcat-${index}`} className="overflow-hidden">
                   <CardContent className="p-6">
                     <h3 className="text-xl font-semibold mb-4">{subcat.name}</h3>
                     <div className="grid grid-cols-2 gap-4 mb-4">
-                      {subcategoryTools[subcat.id]?.slice(0, 6).map((tool) => (
+                      {subcategoryTools[subcat.id]?.slice(0, 6).map((tool, toolIndex) => (
                         <Link
-                          key={tool.id}
+                          key={tool.id || `${subcat.id}-tool-${toolIndex}`}
                           href={`/tools/${tool.id}`}
                           className="flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                         >

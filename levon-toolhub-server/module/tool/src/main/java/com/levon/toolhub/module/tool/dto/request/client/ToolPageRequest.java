@@ -16,8 +16,8 @@ public class ToolPageRequest {
      * 每页显示记录数
      */
     @Min(value = 1, message = "每页显示记录数不能小于1")
-    @Max(value = 100, message = "每页显示记录数不能大于100")
-    private Integer size = 16;
+    @Max(value = 30, message = "每页显示记录数不能大于30")
+    private Integer size = 30;
 
     /**
      * 排序方式：1=最新，2=最热

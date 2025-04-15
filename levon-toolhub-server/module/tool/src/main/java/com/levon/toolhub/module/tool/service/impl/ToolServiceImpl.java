@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.levon.toolhub.common.exception.BizException;
 import com.levon.toolhub.common.model.CursorPageResult;
+import com.levon.toolhub.framework.cache.CacheUtils;
+import com.levon.toolhub.framework.cache.CaffeineCache;
 import com.levon.toolhub.module.tool.converter.ToolConverter;
 import com.levon.toolhub.module.tool.dto.request.client.ToolPageRequest;
 import com.levon.toolhub.module.tool.dto.response.client.ToolBriefResponse;
@@ -15,7 +17,9 @@ import com.levon.toolhub.module.tool.mapper.ToolMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,6 +43,12 @@ public class ToolServiceImpl extends ServiceImpl<ToolMapper, Tool>
 
     @Autowired
     private ToolConverter toolConverter;
+    
+    @Autowired
+    private CacheUtils cacheUtils;
+    
+    @Autowired
+    private CaffeineCache caffeineCache;
 
     /**
      * 获取主分类下的工具列表
@@ -108,6 +118,35 @@ public class ToolServiceImpl extends ServiceImpl<ToolMapper, Tool>
 
         // 8. 返回结果
         return CursorPageResult.of(toolResponses, hasMore, nextCursor, total);
+    }
+    
+    /**
+     * 刷新工具缓存
+     * 手动触发清除所有工具相关缓存
+     */
+    @Override
+    @CacheEvict(value = "toolCache", allEntries = true)
+    public void refreshToolCache() {
+        log.info("手动触发刷新工具缓存");
+        // 使用Spring Cache注解自动清除缓存
+        
+        // 也可以使用CaffeineCache手动清除
+        caffeineCache.invalidateAll("toolCache");
+        // 或者使用CacheUtils工具类清除
+        cacheUtils.clear("toolCache");
+        
+        log.info("工具缓存刷新完成");
+    }
+    
+    /**
+     * 定时刷新缓存任务
+     * 每天凌晨3点执行
+     */
+    @Scheduled(cron = "0 0 3 * * ?")
+    public void scheduledCacheRefresh() {
+        log.info("开始执行定时刷新工具缓存任务");
+        refreshToolCache();
+        log.info("定时刷新工具缓存任务完成");
     }
 
     // TODO 工具浏览次数、工具收藏次数

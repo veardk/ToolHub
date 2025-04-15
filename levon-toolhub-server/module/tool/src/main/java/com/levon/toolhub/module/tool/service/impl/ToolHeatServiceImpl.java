@@ -28,7 +28,7 @@ public class ToolHeatServiceImpl implements ToolHeatService {
 
     @Autowired
     private ToolService toolService;
-    
+
     @Override
     @Scheduled(cron = "0 0 * * * *") // 每小时执行一次
     @Transactional(rollbackFor = Exception.class)
@@ -40,6 +40,7 @@ public class ToolHeatServiceImpl implements ToolHeatService {
             log.debug("待更新工具数量: {}", tools.size());
             
             // 2. 批量更新热度
+            // TODO 实现分批次更新，避免一次读写操作太多次
             batchUpdateToolHeat(tools);
             
             log.info("工具热度更新完成，更新数量: {}", tools.size());

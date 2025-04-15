@@ -27,11 +27,12 @@ const ToolGrid = dynamic(() => import('@/components/category/tool-grid').then(mo
 
 export default function AIToolsPage() {
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1)
-  const [toolsPerPage] = useState(12)
+  const [toolsPerPage] = useState(25)
   const [totalTools, setTotalTools] = useState(0)
   const [category, setCategory] = useState<Category | null>(null)
   const [loading, setLoading] = useState(true)
+  const [priceFilter, setPriceFilter] = useState<number | null>(null)
+  const [sortOption, setSortOption] = useState<number>(1) // 默认为1（最新）
   
   useEffect(() => {
     const fetchCategoryData = async () => {
@@ -52,63 +53,21 @@ export default function AIToolsPage() {
     fetchCategoryData()
   }, [])
   
-  // 计算总页数
-  const totalPages = Math.ceil(totalTools / toolsPerPage)
-  
-  // 处理页面切换
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-  
   // 从ToolGrid获取工具总数的回调函数
   const handleToolsCountUpdate = (count: number) => {
     setTotalTools(count)
   }
   
-  // 渲染分页控件
-  const renderPagination = () => {
-    if (totalPages <= 1) return null
-    
-    return (
-      <div className="flex justify-center items-center space-x-2 mt-8">
-        <Button 
-          variant="outline" 
-          size="icon"
-          disabled={currentPage === 1}
-          onClick={() => handlePageChange(currentPage - 1)}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        
-        {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-          // 如果页数超过5页，显示当前页附近的页码
-          let pageToShow = i + 1;
-          if (totalPages > 5 && currentPage > 3) {
-            pageToShow = Math.min(currentPage - 2 + i, totalPages);
-          }
-          return (
-            <Button
-              key={pageToShow}
-              variant={currentPage === pageToShow ? "default" : "outline"}
-              size="sm"
-              onClick={() => handlePageChange(pageToShow)}
-            >
-              {pageToShow}
-            </Button>
-          );
-        })}
-        
-        <Button 
-          variant="outline" 
-          size="icon"
-          disabled={currentPage === totalPages}
-          onClick={() => handlePageChange(currentPage + 1)}
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
-      </div>
-    )
+  // 处理价格筛选变化
+  const handlePriceFilterChange = (value: number | null) => {
+    console.log(`AITools页面接收到价格筛选变化: ${value}`);
+    setPriceFilter(value);
+  }
+
+  // 处理排序方式变化
+  const handleSortChange = (value: number) => {
+    console.log(`AITools页面接收到排序方式变化: ${value}`);
+    setSortOption(value);
   }
 
   // 格式化渐变色
@@ -154,7 +113,7 @@ export default function AIToolsPage() {
             description={category.description}
             totalTools={category.toolCount}
             newTools={category.newToolsThisMonth}
-            backgroundImage="/placeholder.svg?height=300&width=1200"
+            backgroundImage={category.background || "/placeholder.svg?height=300&width=1200"}
             gradientClass={formatGradient()}
           />
         )}
@@ -166,6 +125,9 @@ export default function AIToolsPage() {
             <CategorySidebar 
               category={1} 
               onSubcategoryChange={setSelectedSubcategory}
+              onPriceFilterChange={handlePriceFilterChange}
+              onSortChange={handleSortChange}
+              sortOption={sortOption}
             />
           </Suspense>
           
@@ -179,13 +141,14 @@ export default function AIToolsPage() {
             <ToolGrid 
               category="ai-tools" 
               subcategory={selectedSubcategory}
-              page={currentPage}
+              page={1}
               itemsPerPage={toolsPerPage}
               onCountUpdate={handleToolsCountUpdate}
+              priceFilter={priceFilter}
+              sortOption={sortOption}
             />
           </Suspense>
         </div>
-        {renderPagination()}
       </main>
     </div>
   )
