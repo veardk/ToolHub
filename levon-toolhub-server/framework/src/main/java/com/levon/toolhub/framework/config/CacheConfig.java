@@ -1,10 +1,12 @@
 package com.levon.toolhub.framework.config;
 
+import com.levon.toolhub.framework.cache.CustomKeyGenerator;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.cache.interceptor.KeyGenerator;
 
 /**
  * 缓存配置
@@ -25,8 +27,17 @@ public class CacheConfig {
                 "categoryCache",   // 分类缓存
                 "subcategoryCache", // 子分类缓存
                 "toolCache",       // 工具缓存
-                "countCache"       // 统计数据缓存
+                "countCache"     // 统计数据缓存
         ));
         return cacheManager;
+    }
+    
+    /**
+     * 自定义缓存键生成器
+     * 在@Cacheable注解中可以通过keyGenerator="customKeyGenerator"使用
+     */
+    @Bean
+    public KeyGenerator customKeyGenerator() {
+        return new CustomKeyGenerator();
     }
 } 

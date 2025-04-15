@@ -1,5 +1,6 @@
 package com.levon.toolhub.module.tool.mapper;
 
+import com.levon.toolhub.module.tool.dto.response.client.ToolBriefResponse;
 import com.levon.toolhub.module.tool.entity.Tool;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
@@ -28,7 +29,7 @@ public interface ToolMapper extends BaseMapper<Tool> {
      * @param sort 排序方式
      * @return 工具列表
      */
-    List<Tool> findByCategoryId(
+    List<ToolBriefResponse> findByCategoryId(
         @Param("categoryId") Long categoryId,
         @Param("subCategoryId") Long subCategoryId,
         @Param("priceType") Integer priceType,

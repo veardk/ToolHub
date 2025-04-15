@@ -45,8 +45,8 @@
     </sql>
 
     <!-- 根据分类ID查询工具列表 -->
-    <select id="findByCategoryId" resultType="com.levon.toolhub.module.tool.entity.Tool">
-        SELECT t.*, s.name as sub_category_name
+    <select id="findByCategoryId" resultType="com.levon.toolhub.module.tool.dto.response.client.ToolBriefResponse">
+        SELECT t.*,s.name as subcategoryName
         FROM levon_toolhub_tool t
         LEFT JOIN levon_toolhub_tool_subcategory s ON t.subcategory_id = s.id
         WHERE t.category_id = #{categoryId}

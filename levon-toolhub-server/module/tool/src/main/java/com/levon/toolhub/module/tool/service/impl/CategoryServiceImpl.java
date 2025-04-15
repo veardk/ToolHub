@@ -5,9 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.levon.toolhub.common.exception.BizException;
 import com.levon.toolhub.module.tool.converter.CategoryConverter;
 import com.levon.toolhub.module.tool.converter.SubcategoryConverter;
-import com.levon.toolhub.module.tool.converter.ToolConverter;
 
-import com.levon.toolhub.module.tool.dto.request.client.ToolPageRequest;
 import com.levon.toolhub.module.tool.dto.response.client.*;
 import com.levon.toolhub.module.tool.entity.Category;
 import com.levon.toolhub.module.tool.entity.Subcategory;
@@ -22,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -145,6 +142,19 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category>
         
         // 设置分类信息
         CategoryDetailResponse categoryInfo = categoryConverter.toDetailDTO(category);
+
+        // 设置主分类下工具总数
+        Long categoryToolCount = toolMapper.selectCount(new LambdaQueryWrapper<Tool>().eq(Tool::getCategoryId, categoryId));
+        categoryInfo.setToolCount(categoryToolCount.intValue());
+
+        // 设置这个分类下新增工具数量
+        Long newToolsThisMonth = toolMapper.selectCount(new LambdaQueryWrapper<Tool>().eq(Tool::getCategoryId, categoryId).between(Tool::getCreateDate, LocalDateTime.now().withDayOfMonth(1), LocalDateTime.now()));
+        categoryInfo.setNewToolsThisMonth(newToolsThisMonth.intValue());
+
+        // 设置子分类总数
+        Long subcategoryCount = subcategoryMapper.selectCount(new LambdaQueryWrapper<Subcategory>().eq(Subcategory::getCategoryId, categoryId));
+        categoryInfo.setSubcategoryCount(subcategoryCount.intValue());
+
         result.setCategoryInfo(categoryInfo);
         
         // 查询子分类列表

@@ -15,18 +15,19 @@ import com.levon.toolhub.module.tool.mapper.ToolMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 /**
-* @author leivik
-* @description 针对表【levon_toolhub_tool(工具表)】的数据库操作Service实现
-* @createDate 2025-04-14 14:27:12
-*/
+ * @author leivik
+ * @description 针对表【levon_toolhub_tool(工具表)】的数据库操作Service实现
+ * @createDate 2025-04-14 14:27:12
+ */
 @Service
 public class ToolServiceImpl extends ServiceImpl<ToolMapper, Tool>
-    implements ToolService{
+        implements ToolService {
 
     private static final Logger log = LoggerFactory.getLogger(ToolServiceImpl.class);
 
@@ -43,10 +44,15 @@ public class ToolServiceImpl extends ServiceImpl<ToolMapper, Tool>
      * 获取主分类下的工具列表
      *
      * @param categoryId 主分类ID
-     * @param request 分页和筛选请求
+     * @param request    分页和筛选请求
      * @return 工具列表响应
      */
     @Override
+    @Cacheable(
+            value = "toolCache",
+            keyGenerator = "customKeyGenerator",
+            unless = "#result == null || #result.total == 0"
+    )
     public CursorPageResult<ToolBriefResponse> getCategoryTools(Long categoryId, ToolPageRequest request) {
         log.debug("开始查询分类工具列表, categoryId: {}, request: {}", categoryId, request);
         // 1. 验证分类是否存在
@@ -68,7 +74,7 @@ public class ToolServiceImpl extends ServiceImpl<ToolMapper, Tool>
         }
 
         // 3. 查询数据
-        List<Tool> tools = toolMapper.findByCategoryId(
+        List<ToolBriefResponse> toolResponses = toolMapper.findByCategoryId(
                 categoryId,
                 request.getSubCategoryId(),
                 request.getPriceType(),
@@ -76,14 +82,12 @@ public class ToolServiceImpl extends ServiceImpl<ToolMapper, Tool>
                 request.getSize() + 1,  // 多查一条用于判断是否还有更多
                 request.getSort()
         );
-        log.debug("查询到工具数量: {}", tools.size());
+        log.debug("查询到工具数量: {}", toolResponses.size());
 
-        // TODO                 "subCategoryId": null,
-        //                "subCategoryName": null,
         // 4. 判断是否还有更多数据
-        boolean hasMore = tools.size() > request.getSize();
+        boolean hasMore = toolResponses.size() > request.getSize();
         if (hasMore) {
-            tools = tools.subList(0, request.getSize());
+            toolResponses = toolResponses.subList(0, request.getSize());
             log.debug("截取一页数据, size: {}", request.getSize());
         }
 
@@ -99,17 +103,14 @@ public class ToolServiceImpl extends ServiceImpl<ToolMapper, Tool>
         );
         log.debug("查询到总数: {}", total);
 
-        // 7. 转换为DTO
-        List<ToolBriefResponse> toolDTOs = toolConverter.toToolBriefResponseList(tools);
-
-        log.info("分类工具列表查询完成, categoryId: {}, 当前页数量: {}, 总数: {}, 是否有下一页: {}", 
-                categoryId, toolDTOs.size(), total, hasMore);
+        log.info("分类工具列表查询完成, categoryId: {}, 当前页数量: {}, 总数: {}, 是否有下一页: {}",
+                categoryId, toolResponses.size(), total, hasMore);
 
         // 8. 返回结果
-        return CursorPageResult.of(toolDTOs, hasMore, nextCursor, total);
+        return CursorPageResult.of(toolResponses, hasMore, nextCursor, total);
     }
 
-    // TODO 文章浏览次数、文章收藏次数
+    // TODO 工具浏览次数、工具收藏次数
 }
 
 
