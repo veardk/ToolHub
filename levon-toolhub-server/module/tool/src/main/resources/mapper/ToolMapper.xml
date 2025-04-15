@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.levon.toolhub.module.tool.mapper.ToolMapper">
+
+    <resultMap id="BaseResultMap" type="com.levon.toolhub.module.tool.entity.Tool">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="categoryId" column="category_id" jdbcType="TINYINT"/>
+            <result property="subcategoryId" column="subcategory_id" jdbcType="BIGINT"/>
+            <result property="logo" column="logo" jdbcType="VARCHAR"/>
+            <result property="websiteUrl" column="website_url" jdbcType="VARCHAR"/>
+            <result property="shortDescription" column="short_description" jdbcType="VARCHAR"/>
+            <result property="fullDescription" column="full_description" jdbcType="VARCHAR"/>
+            <result property="priceType" column="price_type" jdbcType="TINYINT"/>
+            <result property="isNew" column="is_new" jdbcType="TINYINT"/>
+            <result property="developer" column="developer" jdbcType="VARCHAR"/>
+            <result property="developerInfo" column="developer_info" jdbcType="VARCHAR"/>
+            <result property="developerUrl" column="developer_url" jdbcType="VARCHAR"/>
+            <result property="viewCount" column="view_count" jdbcType="BIGINT"/>
+            <result property="favoriteCount" column="favorite_count" jdbcType="BIGINT"/>
+            <result property="status" column="status" jdbcType="TINYINT"/>
+            <result property="coreFeatures" column="core_features" jdbcType="VARCHAR"/>
+            <result property="useCases" column="use_cases" jdbcType="VARCHAR"/>
+            <result property="techSpecs" column="tech_specs" jdbcType="VARCHAR"/>
+            <result property="purchaseSuggestions" column="purchase_suggestions" jdbcType="VARCHAR"/>
+            <result property="createId" column="create_id" jdbcType="BIGINT"/>
+            <result property="updateId" column="update_id" jdbcType="BIGINT"/>
+            <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
+            <result property="updateDate" column="update_date" jdbcType="TIMESTAMP"/>
+            <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,name,category_id,
+        subcategory_id,logo,website_url,
+        short_description,full_description,price_type,
+        is_new,developer,developer_info,
+        developer_url,view_count,favorite_count,
+        status,core_features,use_cases,
+        tech_specs,purchase_suggestions,create_id,
+        update_id,create_date,update_date,
+        is_delete
+    </sql>
+
+    <!-- 根据分类ID查询工具列表 -->
+    <select id="findByCategoryId" resultType="com.levon.toolhub.module.tool.entity.Tool">
+        SELECT t.*, s.name as sub_category_name
+        FROM levon_toolhub_tool t
+        LEFT JOIN levon_toolhub_tool_subcategory s ON t.subcategory_id = s.id
+        WHERE t.category_id = #{categoryId}
+        AND t.is_delete = 0
+        <if test="subCategoryId != null">
+            AND t.subcategory_id = #{subCategoryId}
+        </if>
+        <if test="priceType != null">
+            AND t.price_type = #{priceType}
+        </if>
+        <choose>
+            <when test="sort == 1">
+                ORDER BY t.create_date DESC,t.is_new DESC
+            </when>
+            <when test="sort == 2">
+                ORDER BY t.heat DESC
+            </when>
+        </choose>
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <!-- 根据分类ID查询工具列表总数 -->
+    <select id="countByCategoryId" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM levon_toolhub_tool t
+        WHERE t.category_id = #{categoryId}
+        AND t.is_delete = 0
+        <if test="subCategoryId != null">
+            AND t.subcategory_id = #{subCategoryId}
+        </if>
+        <if test="priceType != null">
+            AND t.price_type = #{priceType}
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,44 @@
+spring:
+  # 数据源配置
+  datasource:
+    url: jdbc:mysql://localhost:3306/levon_toolhub?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:root}
+  # Redis配置
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: 0
+  # RabbitMQ配置
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+
+# 七牛云配置
+qiniu:
+  access-key: ${QINIU_ACCESS_KEY:your-access-key}
+  secret-key: ${QINIU_SECRET_KEY:your-secret-key}
+  bucket: ${QINIU_BUCKET:your-bucket-name}
+  domain: ${QINIU_DOMAIN:your-domain}
+
+# Elasticsearch配置
+elasticsearch:
+  uris: ${ES_URIS:http://localhost:9200}
+  username: ${ES_USERNAME:}
+  password: ${ES_PASSWORD:}
+
+# 服务器配置
+server:
+  port: ${SERVER_PORT:8080}
+
+# 日志配置
+logging:
+  level:
+    root: warn
+    com.levon.toolhub: info
+  file:
+    name: /var/log/levon-toolhub/app.log 

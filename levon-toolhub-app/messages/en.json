@@ -1,0 +1,64 @@
+{
+  "common": {
+    "appName": "ToolHub",
+    "tagline": "Discover, compare, and use the best tools",
+    "search": "Search for tools...",
+    "viewAll": "View all",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Log out",
+    "profile": "Profile",
+    "settings": "Settings",
+    "myCollections": "My Collections",
+    "popularTools": "This Week's Popular Tools",
+    "users": "users",
+    "new": "New",
+    "free": "Free",
+    "viewDetails": "View Details",
+    "newsletter": "Newsletter",
+    "newsletterDesc": "Subscribe to our newsletter to get updates on new tools and features.",
+    "subscribe": "Subscribe",
+    "yourEmail": "Your email",
+    "footer": {
+      "description": "Discover, compare, and use the best tools for your workflow.",
+      "quickLinks": "Quick Links",
+      "categories": "Categories",
+      "allRightsReserved": "All rights reserved.",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "cookiePolicy": "Cookie Policy"
+    },
+    "nav": {
+      "home": "Home",
+      "aiTools": "AI Tools",
+      "webTools": "Web Tools",
+      "appTools": "App Tools",
+      "developerTools": "Developer Tools",
+      "articles": "Articles",
+      "news": "News",
+      "about": "About"
+    }
+  },
+  "home": {
+    "exploreCategories": "Explore Tool Categories",
+    "aiTools": {
+      "title": "AI Tools",
+      "description": "Discover the latest in artificial intelligence tools"
+    },
+    "webTools": {
+      "title": "Web Tools",
+      "description": "Essential tools for your daily web activities"
+    },
+    "appTools": {
+      "title": "App Tools",
+      "description": "Mobile and desktop applications for productivity"
+    },
+    "developerTools": {
+      "title": "Developer Tools",
+      "description": "Tools for developers to code more efficiently"
+    },
+    "exploreSubcategories": "Explore Subcategories",
+    "featuredArticles": "Featured Articles",
+    "latestFromNews": "Latest News"
+  }
+}

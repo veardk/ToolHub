@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.levon.toolhub</groupId>
+        <artifactId>levon-toolhub-server</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>module</artifactId>
+    <name>levon-toolhub-module</name>
+    <description>业务模块目录 - 包含所有功能领域模块</description>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>tool</module>
+        <module>user</module>
+        <module>content</module>
+        <module>interaction</module>
+        <module>search</module>
+        <module>contribution</module>
+        <module>admin</module>
+        <module>statistics</module>
+    </modules>
+
+    <dependencies>
+        <!-- 所有业务模块统一依赖framework -->
+        <dependency>
+            <groupId>com.levon.toolhub</groupId>
+            <artifactId>framework</artifactId>
+        </dependency>
+
+        <!-- 测试相关 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project> 

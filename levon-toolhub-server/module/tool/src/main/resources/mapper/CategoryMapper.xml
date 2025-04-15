@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.levon.toolhub.module.tool.mapper.CategoryMapper">
+
+    <resultMap id="BaseResultMap" type="com.levon.toolhub.module.tool.entity.Category">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="code" column="code" jdbcType="VARCHAR"/>
+            <result property="description" column="description" jdbcType="VARCHAR"/>
+            <result property="iconKey" column="icon_key" jdbcType="VARCHAR"/>
+            <result property="bgColorStart" column="bg_color_start" jdbcType="VARCHAR"/>
+            <result property="bgColorEnd" column="bg_color_end" jdbcType="VARCHAR"/>
+            <result property="background" column="background" jdbcType="VARCHAR"/>
+            <result property="sortOrder" column="sort_order" jdbcType="INTEGER"/>
+            <result property="createId" column="create_id" jdbcType="BIGINT"/>
+            <result property="updateId" column="update_id" jdbcType="BIGINT"/>
+            <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
+            <result property="updateDate" column="update_date" jdbcType="TIMESTAMP"/>
+            <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,name,code,
+        description,icon_key,bg_color_start,
+        bg_color_end,background,sort_order,
+        create_id,update_id,create_date,
+        update_date,is_delete
+    </sql>
+    
+    <!-- 统计某个主分类下的工具总数 -->
+    <select id="countToolsByCategoryId" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM levon_toolhub_tool t
+        JOIN levon_toolhub_tool_subcategory s ON t.subcategory_id = s.id
+        WHERE s.category_id = #{categoryId} AND t.is_delete = 0 AND s.is_delete = 0
+    </select>
+    
+    <!-- 统计某个主分类下的子分类总数 -->
+    <select id="countSubcategoriesByCategoryId" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM levon_toolhub_tool_subcategory
+        WHERE category_id = #{categoryId} AND is_delete = 0
+    </select>
+    
+    <!-- 统计某个主分类下本月新增的工具数量 -->
+    <select id="countNewToolsThisMonthByCategoryId" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM levon_toolhub_tool t
+        JOIN levon_toolhub_tool_subcategory s ON t.subcategory_id = s.id
+        WHERE s.category_id = #{categoryId} AND t.is_delete = 0 AND s.is_delete = 0
+        AND DATE_FORMAT(t.create_date, '%Y%m') = DATE_FORMAT(CURDATE(), '%Y%m')
+    </select>
+</mapper>

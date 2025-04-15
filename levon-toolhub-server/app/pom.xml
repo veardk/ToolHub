@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.levon.toolhub</groupId>
+        <artifactId>levon-toolhub-server</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>app</artifactId>
+    <name>levon-toolhub-app</name>
+    <description>API模块 - 应用入口和全局配置中心</description>
+
+    <dependencies>
+        <!-- 业务模块依赖 - 直接依赖各个业务模块 -->
+        <dependency>
+            <groupId>com.levon.toolhub</groupId>
+            <artifactId>tool</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.levon.toolhub</groupId>
+            <artifactId>user</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.levon.toolhub</groupId>
+            <artifactId>content</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.levon.toolhub</groupId>
+            <artifactId>interaction</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.levon.toolhub</groupId>
+            <artifactId>search</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.levon.toolhub</groupId>
+            <artifactId>contribution</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.levon.toolhub</groupId>
+            <artifactId>admin</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.levon.toolhub</groupId>
+            <artifactId>statistics</artifactId>
+        </dependency>
+        
+        <!-- 明确添加框架依赖，确保注解能被正确识别 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+
+        <!-- Spring Boot Admin Server -->
+        <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-starter-server</artifactId>
+        </dependency>
+
+        <!-- Spring Boot Actuator -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        
+        <!-- Netty MacOS DNS resolver -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-resolver-dns-native-macos</artifactId>
+            <version>4.1.107.Final</version>
+            <classifier>osx-aarch_64</classifier>
+        </dependency>
+
+        <!-- Sa-Token 认证框架 -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-spring-boot3-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-redis-jackson</artifactId>
+        </dependency>
+
+        <!-- 测试相关 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
+                <configuration>
+                    <mainClass>com.levon.toolhub.app.ToolhubApplication</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>repackage</id>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project> 

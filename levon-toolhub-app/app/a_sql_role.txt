@@ -1,0 +1,15 @@
+1.请你以企业级规范标准设计数据库（表设计的全一些）。非必要不要创建索引，后期可以在手动创建
+2.不用主外键关联模式，使用关联表。
+3.不使用枚举类型，使用tinyint。
+4.每张表前以levon_toolhub_ 开头
+5.每张表都以这5个字段结尾：
+  /* 审计字段区域 */
+  `create_id` BIGINT NOT NULL COMMENT '创建人id',  
+  `update_id` BIGINT DEFAULT NULL COMMENT '更新人id',
+  `create_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `is_delete` tinyint(1) DEFAULT '0' COMMENT '是否删除, 0.否 1.是'
+6.输出时，请将表名以 "## 表名 中文"（二级标题）为开头，相关联有关系的表连接性输出:
+## 表名 中文
+与什么表有关联（如果有），以及描述
+mysql代码

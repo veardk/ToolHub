@@ -1,0 +1,64 @@
+{
+  "common": {
+    "appName": "ツールハブ",
+    "tagline": "最高のツールを発見、比較、使用する",
+    "search": "ツールを検索...",
+    "viewAll": "すべて表示",
+    "login": "ログイン",
+    "register": "登録",
+    "logout": "ログアウト",
+    "profile": "プロフィール",
+    "settings": "設定",
+    "myCollections": "マイコレクション",
+    "popularTools": "今週の人気ツール",
+    "users": "ユーザー",
+    "new": "新着",
+    "free": "無料",
+    "viewDetails": "詳細を見る",
+    "newsletter": "ニュースレター",
+    "newsletterDesc": "ニュースレターを購読して、新しいツールや機能に関する最新情報を入手しましょう。",
+    "subscribe": "購読する",
+    "yourEmail": "メールアドレス",
+    "footer": {
+      "description": "ワークフローに最適なツールを発見、比較、使用しましょう。",
+      "quickLinks": "クイックリンク",
+      "categories": "カテゴリー",
+      "allRightsReserved": "All rights reserved.",
+      "privacyPolicy": "プライバシーポリシー",
+      "termsOfService": "利用規約",
+      "cookiePolicy": "Cookieポリシー"
+    },
+    "nav": {
+      "home": "ホーム",
+      "aiTools": "AIツール",
+      "webTools": "Webツール",
+      "appTools": "アプリツール",
+      "developerTools": "開発者ツール",
+      "articles": "記事",
+      "news": "ニュース",
+      "about": "サイトについて"
+    }
+  },
+  "home": {
+    "exploreCategories": "ツールカテゴリーを探索",
+    "aiTools": {
+      "title": "AIツール",
+      "description": "最新の人工知能ツールを発見する"
+    },
+    "webTools": {
+      "title": "ウェブツール",
+      "description": "日常のウェブ活動に不可欠なツール"
+    },
+    "appTools": {
+      "title": "アプリツール",
+      "description": "生産性向上のためのモバイルおよびデスクトップアプリケーション"
+    },
+    "developerTools": {
+      "title": "開発者ツール",
+      "description": "開発者がより効率的にコーディングするためのツール"
+    },
+    "exploreSubcategories": "サブカテゴリを探索",
+    "featuredArticles": "注目の記事",
+    "latestFromNews": "最新のニュース"
+  }
+}

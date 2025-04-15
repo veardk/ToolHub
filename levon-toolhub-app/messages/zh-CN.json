@@ -1,0 +1,64 @@
+{
+  "common": {
+    "appName": "工具库",
+    "tagline": "发现、比较和使用最佳工具",
+    "search": "搜索工具...",
+    "viewAll": "查看全部",
+    "login": "登录",
+    "register": "注册",
+    "logout": "退出登录",
+    "profile": "个人资料",
+    "settings": "设置",
+    "myCollections": "我的收藏",
+    "popularTools": "本周热门工具",
+    "users": "用户",
+    "new": "新品",
+    "free": "免费",
+    "viewDetails": "查看详情",
+    "newsletter": "新闻通讯",
+    "newsletterDesc": "订阅我们的新闻通讯，获取有关新工具和功能的更新。",
+    "subscribe": "订阅",
+    "yourEmail": "您的邮箱",
+    "footer": {
+      "description": "发现、比较和使用最适合您工作流程的工具。",
+      "quickLinks": "快速链接",
+      "categories": "分类",
+      "allRightsReserved": "版权所有。",
+      "privacyPolicy": "隐私政策",
+      "termsOfService": "服务条款",
+      "cookiePolicy": "Cookie 政策"
+    },
+    "nav": {
+      "home": "首页",
+      "aiTools": "AI工具",
+      "webTools": "网页工具",
+      "appTools": "应用工具",
+      "developerTools": "开发者工具",
+      "articles": "文章",
+      "news": "资讯",
+      "about": "关于我们"
+    }
+  },
+  "home": {
+    "exploreCategories": "探索工具分类",
+    "aiTools": {
+      "title": "AI 工具",
+      "description": "发现最新的人工智能工具"
+    },
+    "webTools": {
+      "title": "网页工具",
+      "description": "日常网络活动的必备工具"
+    },
+    "appTools": {
+      "title": "应用工具",
+      "description": "提高生产力的移动和桌面应用程序"
+    },
+    "developerTools": {
+      "title": "开发者工具",
+      "description": "帮助开发者更高效编码的工具"
+    },
+    "exploreSubcategories": "探索子分类",
+    "featuredArticles": "精选文章",
+    "latestFromNews": "最新资讯"
+  }
+}
