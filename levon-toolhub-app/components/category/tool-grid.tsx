@@ -112,7 +112,6 @@ export function ToolGrid({
       if (priceFilter !== externalPriceFilter) {
         setPriceFilter(externalPriceFilter);
         setCursor(null); // 重置分页
-        console.log(`价格筛选已更新: ${externalPriceFilter}, 类别: ${category}`);
       }
     }
   }, [externalPriceFilter, category]);
@@ -124,7 +123,6 @@ export function ToolGrid({
       if (sortOption !== externalSortOption) {
         setSortOption(externalSortOption);
         setCursor(null); // 重置分页
-        console.log(`排序选项已更新: ${externalSortOption}, 类别: ${category}`);
       }
     }
   }, [externalSortOption, category]);
@@ -186,20 +184,16 @@ export function ToolGrid({
         
         // 如果选择了子分类，添加到请求参数
       if (subcategory) {
-          console.log("子分类参数:", subcategory);
-          
           // 首先尝试直接转换为数字（子分类ID）
           if (/^\d+$/.test(subcategory)) {
             // 如果是纯数字，直接作为ID处理
             params.append('subCategoryId', subcategory);
-            console.log(`使用数字ID: ${subcategory}`);
           } else {
             // 如果是code，尝试从映射表查找真实ID
             if (subcategoryIdMap[subcategory]) {
               // 映射表中找到了对应的ID
               const realSubCategoryId = subcategoryIdMap[subcategory];
               params.append('subCategoryId', realSubCategoryId.toString());
-              console.log(`找到子分类: ${subcategory}, 映射ID: ${realSubCategoryId}`);
             } else {
               // 映射表中未找到，尝试在subcategories中查找
               const categoryKey = categoryId.toString();
@@ -210,9 +204,7 @@ export function ToolGrid({
                   // 注意：如果没有映射表项，这是后备方案
                   const backupId = subcategory.replace(/[^0-9]/g, '') || '1';
                   params.append('subCategoryId', backupId);
-                  console.log(`使用备用ID: ${backupId} (来自 ${subcategory})`);
                 } else {
-                  console.warn(`未找到子分类: ${subcategory}`);
                 }
               }
             }
@@ -221,12 +213,10 @@ export function ToolGrid({
         
         // 调用实际API
         const result = await fetchCategoryTools(categoryId, params);
-        console.log("API返回数据:", result);
         
         // 处理返回结果
         if (result && result.code === 200 && result.data) {
           const toolsList = result.data.list || [];
-          console.log("工具列表:", toolsList, "总数:", result.data.total);
           
           if (page === 1 || !cursor) {
             // 第一页，替换所有工具
@@ -247,7 +237,6 @@ export function ToolGrid({
           }
         } else {
           // 如果数据结构不正确或请求成功但返回错误码，显示错误提示
-          console.warn("API返回数据结构不正确或请求失败:", result);
           
           // 显示错误提示框
           toast.error({
@@ -265,7 +254,6 @@ export function ToolGrid({
           }
         }
       } catch (err) {
-        console.error('Error fetching tools:', err);
         
         // 显示错误提示框
         toast.error({
@@ -361,7 +349,6 @@ export function ToolGrid({
         .then(result => {
           if (result && result.code === 200 && result.data) {
             const toolsList = result.data.list || [];
-            console.log("加载更多结果, 新增工具:", toolsList.length);
             
             // 追加工具
             setTools(prev => [...prev, ...toolsList]);
@@ -371,7 +358,6 @@ export function ToolGrid({
             setCursor(result.data.nextCursor || null);
     } else {
             // 如果数据结构不正确或请求成功但返回错误码
-            console.warn("加载更多失败:", result);
             
             // 显示错误提示框
             toast({
@@ -381,7 +367,6 @@ export function ToolGrid({
           }
         })
         .catch(err => {
-          console.error('加载更多错误:', err);
           
           // 显示错误提示框
           toast({
@@ -513,8 +498,8 @@ export function ToolGrid({
               <button
                 onClick={(e) => toggleSave(tool.id)}
                 className="flex items-center justify-center h-7 w-7 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-full transition-colors"
-              >
-                {isSaved ? (
+                  >
+                    {isSaved ? (
                   <BookmarkCheck className="h-4 w-4 fill-primary text-primary" />
                 ) : (
                   <Bookmark className="h-4 w-4" />
@@ -539,16 +524,16 @@ export function ToolGrid({
               <CardContent className="p-0 flex-grow flex flex-col justify-center pt-4">
                 {/* 工具图标居中显示 */}
                 <div className="relative flex items-center justify-center p-4 flex-grow">
-                  <Image
+                <Image
                     src={tool.logo || "/placeholder.svg?height=64&width=64"}
-                    alt={tool.name}
+                  alt={tool.name}
                     width={72}
                     height={72}
                     priority
                     className="object-contain transition-transform duration-300 ease-in-out group-hover:scale-110"
                   />
-                </div>
-                
+            </div>
+            
                 {/* 工具名称和描述 */}
                 <div className="px-3 pb-4 space-y-2 text-center flex-grow flex flex-col items-center justify-center">
                   <h3 className="font-medium text-base truncate">{tool.name}</h3>
@@ -586,12 +571,12 @@ export function ToolGrid({
                     {tool.isNew === 1 && (
                       <div className="text-xs py-1 px-2.5 bg-green-500 rounded-full text-white flex items-center">
                         <span className="font-semibold">New</span>
-                      </div>
+            </div>
                     )}
-                  </div>
-                </div>
+            </div>
+          </div>
               </CardContent>
-            </Card>
+        </Card>
           </Link>
         </div>
       </motion.div>
@@ -649,9 +634,9 @@ export function ToolGrid({
                     <span className="font-semibold">New</span>
                   </div>
                 )}
-              </div>
             </div>
-            
+          </div>
+          
             <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">
               {tool.shortDescription}
             </p>

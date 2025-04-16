@@ -4,6 +4,7 @@ package com.levon.toolhub.module.tool.converter;
 import com.levon.toolhub.module.tool.dto.response.client.ToolBriefResponse;
 import com.levon.toolhub.module.tool.entity.Tool;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -21,6 +22,8 @@ public interface ToolConverter {
      * @param tool 工具对象
      * @return 工具简要信息响应对象
      */
+    @Mapping(target = "subCategoryId", source = "subcategoryId")
+    @Mapping(target = "subCategoryName", ignore = true) // 需要额外传入子分类名称
     ToolBriefResponse toToolBriefResponse(Tool tool);
 
     /**

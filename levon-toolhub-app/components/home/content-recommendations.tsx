@@ -23,7 +23,6 @@ export function ContentRecommendations() {
         setArticles(data)
       } catch (err) {
         setError("Failed to load articles")
-        console.error(err)
       } finally {
         setLoading(false)
       }

@@ -5,6 +5,7 @@ import com.levon.toolhub.module.tool.entity.Tool;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -51,6 +52,15 @@ public interface ToolMapper extends BaseMapper<Tool> {
         @Param("subCategoryId") Long subCategoryId,
         @Param("priceType") Integer priceType
     );
+
+    /**
+     * 增加工具查看次数
+     * 
+     * @param id 工具ID
+     * @return 影响行数
+     */
+    @Update("UPDATE levon_toolhub_tool SET view_count = view_count + 1, heat = heat + 1 WHERE id = #{id}")
+    int incrementViewCount(@Param("id") Long id);
 
 }
 

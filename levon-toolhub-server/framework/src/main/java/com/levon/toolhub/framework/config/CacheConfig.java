@@ -32,7 +32,8 @@ public class CacheConfig {
             "categoryCache",
             "subcategoryCache",
             "toolCache",
-            "countCache"
+            "countCache",
+            "toolDetailCache"
         ));
         
         // 设置缓存默认配置

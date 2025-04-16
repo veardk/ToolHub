@@ -66,6 +66,11 @@ public class Tool extends BaseEntity implements Serializable {
     private Integer isNew;
 
     /**
+     *  平台编码JSON数组[1,3,4,5] ，1=Web,2=iOS,3=Android,4=Mac,5=Linux,6=Windows
+     */
+    private String platforms;
+
+    /**
      * 开发者/公司名称
      */
     private String developer;
@@ -79,6 +84,11 @@ public class Tool extends BaseEntity implements Serializable {
      * 开发者/公司官网URL
      */
     private String developerUrl;
+
+    /**
+     * 开发者/公司官网logo URL
+     */
+    private String developerLogo;
 
     /**
      * 查看次数
@@ -302,6 +312,20 @@ public class Tool extends BaseEntity implements Serializable {
     }
 
     /**
+     * 平台编码JSON数组[1,3,4,5] ，1=Web,2=iOS,3=Android,4=Mac,5=Linux,6=Windows
+     */
+    public String getPlatforms() {
+        return platforms;
+    }
+
+    /**
+     * 平台编码JSON数组[1,3,4,5] ，1=Web,2=iOS,3=Android,4=Mac,5=Linux,6=Windows
+     */
+    public void setPlatforms(String platforms) {
+        this.platforms = platforms;
+    }
+
+    /**
      * 开发者/公司名称
      */
     public String getDeveloper() {
@@ -341,6 +365,20 @@ public class Tool extends BaseEntity implements Serializable {
      */
     public void setDeveloperUrl(String developerUrl) {
         this.developerUrl = developerUrl;
+    }
+
+    /**
+     * 开发者/公司官网logo URL
+     */
+    public String getDeveloperLogo() {
+        return developerLogo;
+    }
+
+    /**
+     * 开发者/公司官网logo URL
+     */
+    public void setDeveloperLogo(String developerLogo) {
+        this.developerLogo = developerLogo;
     }
 
     /**

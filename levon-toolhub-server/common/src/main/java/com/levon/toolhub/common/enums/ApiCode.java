@@ -23,6 +23,8 @@ public enum ApiCode {
      */
     ERROR(500, "系统内部错误"),
     SERVICE_UNAVAILABLE(503, "服务暂时不可用"),
+
+    DATA_NOT_FOUND(504, "数据未找到"),
     
     /**
      * 业务错误

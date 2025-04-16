@@ -1,19 +1,30 @@
 package com.levon.toolhub.module.tool.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.levon.toolhub.common.enums.ApiCode;
 import com.levon.toolhub.common.exception.BizException;
 import com.levon.toolhub.common.model.CursorPageResult;
 import com.levon.toolhub.framework.cache.CacheUtils;
 import com.levon.toolhub.framework.cache.CaffeineCache;
 import com.levon.toolhub.module.tool.converter.ToolConverter;
+import com.levon.toolhub.module.tool.converter.ToolDetailConverter;
 import com.levon.toolhub.module.tool.dto.request.client.ToolPageRequest;
 import com.levon.toolhub.module.tool.dto.response.client.ToolBriefResponse;
+import com.levon.toolhub.module.tool.dto.response.client.ToolDetailResponse;
 import com.levon.toolhub.module.tool.entity.Category;
+import com.levon.toolhub.module.tool.entity.Subcategory;
 import com.levon.toolhub.module.tool.entity.Tool;
+import com.levon.toolhub.module.tool.entity.ToolPricePlan;
+import com.levon.toolhub.module.tool.entity.ToolPricePlanComparison;
+import com.levon.toolhub.module.tool.mapper.CategoryMapper;
+import com.levon.toolhub.module.tool.mapper.SubcategoryMapper;
+import com.levon.toolhub.module.tool.mapper.ToolMapper;
+import com.levon.toolhub.module.tool.mapper.ToolPricePlanComparisonMapper;
+import com.levon.toolhub.module.tool.mapper.ToolPricePlanMapper;
 import com.levon.toolhub.module.tool.service.CategoryService;
 import com.levon.toolhub.module.tool.service.ToolService;
-import com.levon.toolhub.module.tool.mapper.ToolMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +32,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -39,7 +51,16 @@ public class ToolServiceImpl extends ServiceImpl<ToolMapper, Tool>
     private ToolMapper toolMapper;
 
     @Autowired
-    private CategoryService categoryService;
+    private CategoryMapper categoryMapper;
+
+    @Autowired
+    private SubcategoryMapper subcategoryMapper;
+
+    @Autowired
+    private ToolPricePlanMapper toolPricePlanMapper;
+
+    @Autowired
+    private ToolPricePlanComparisonMapper toolPricePlanComparisonMapper;
 
     @Autowired
     private ToolConverter toolConverter;
@@ -49,6 +70,12 @@ public class ToolServiceImpl extends ServiceImpl<ToolMapper, Tool>
     
     @Autowired
     private CaffeineCache caffeineCache;
+
+    @Autowired
+    private ToolDetailConverter toolDetailConverter;
+
+    @Autowired
+    private CategoryService categoryService;
 
     /**
      * 获取主分类下的工具列表
@@ -118,6 +145,79 @@ public class ToolServiceImpl extends ServiceImpl<ToolMapper, Tool>
 
         // 8. 返回结果
         return CursorPageResult.of(toolResponses, hasMore, nextCursor, total);
+    }
+    
+    /**
+     * 获取工具详情
+     *
+     * @param id 工具ID
+     * @return 工具详情响应DTO
+     */
+    @Override
+    @Cacheable(value = "toolDetailCache", key = "#id", unless = "#result == null")
+    @Transactional(readOnly = true)
+    public ToolDetailResponse getToolDetail(Long id) {
+        log.info("获取工具详情, id: {}", id);
+        
+        // 查询工具基本信息
+        Tool tool = getById(id);
+        if (tool == null) {
+            log.warn("工具不存在, id: {}", id);
+            throw new BizException(ApiCode.DATA_NOT_FOUND.getCode(), "工具未找到");
+        }
+        
+        // TODO 更新查看次数（异步处理，不影响当前查询）
+        updateViewCount(id);
+        
+        // 查询分类信息
+        Category category = categoryMapper.selectById(tool.getCategoryId());
+        String categoryName = category != null ? category.getName() : null;
+        
+        // 查询子分类信息
+        Subcategory subcategory = subcategoryMapper.selectById(tool.getSubcategoryId());
+        String subcategoryName = subcategory != null ? subcategory.getName() : null;
+        
+        // 免费工具不返回价格相关信息
+        List<ToolPricePlan> pricePlans = null;
+        ToolPricePlanComparison planComparison = null;
+        
+        // 只有非免费工具才查询价格相关信息
+        if (tool.getPriceType() != null && tool.getPriceType() != 1) {
+            // 查询价格计划列表
+            pricePlans = toolPricePlanMapper.selectList(
+                    Wrappers.<ToolPricePlan>lambdaQuery()
+                            .eq(ToolPricePlan::getToolId, id)
+                            .eq(ToolPricePlan::getIsDelete, 0)
+                            .orderByAsc(ToolPricePlan::getSortOrder)
+            );
+            
+            // 查询价格计划对比
+            planComparison = toolPricePlanComparisonMapper.selectOne(
+                    Wrappers.<ToolPricePlanComparison>lambdaQuery()
+                            .eq(ToolPricePlanComparison::getToolId, id)
+                            .eq(ToolPricePlanComparison::getIsDelete, 0)
+                            .last("LIMIT 1")
+            );
+        }
+        
+        // 构建并返回响应DTO
+        return toolDetailConverter.buildToolDetailResponse(
+                tool, categoryName, subcategoryName, pricePlans, planComparison);
+    }
+    
+    /**
+     * 异步更新工具查看次数
+     *
+     * @param id 工具ID
+     */
+    private void updateViewCount(Long id) {
+        // 实际应用中可以使用消息队列或异步线程池处理，这里简化处理
+        try {
+            toolMapper.incrementViewCount(id);
+        } catch (Exception e) {
+            log.error("更新工具查看次数失败, id: {}", id, e);
+            // 此处仅记录日志，不影响主流程
+        }
     }
     
     /**

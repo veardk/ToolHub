@@ -3,6 +3,7 @@ package com.levon.toolhub.module.tool.service;
 import com.levon.toolhub.common.model.CursorPageResult;
 import com.levon.toolhub.module.tool.dto.request.client.ToolPageRequest;
 import com.levon.toolhub.module.tool.dto.response.client.ToolBriefResponse;
+import com.levon.toolhub.module.tool.dto.response.client.ToolDetailResponse;
 import com.levon.toolhub.module.tool.entity.Tool;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -21,6 +22,14 @@ public interface ToolService extends IService<Tool> {
      * @return 主分类及其工具列表DTO
      */
     CursorPageResult<ToolBriefResponse> getCategoryTools(Long categoryId, ToolPageRequest request);
+    
+    /**
+     * 获取工具详情
+     *
+     * @param id 工具ID
+     * @return 工具详情响应DTO
+     */
+    ToolDetailResponse getToolDetail(Long id);
     
     /**
      * 刷新工具缓存

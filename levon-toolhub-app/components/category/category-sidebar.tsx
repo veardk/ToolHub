@@ -111,7 +111,6 @@ export function CategorySidebar({
   useEffect(() => {
     const newSortOption = externalSortOption === 1 ? "newest" : "popular";
     if (sortOption !== newSortOption) {
-      console.log(`侧边栏接收到外部排序变化: ${externalSortOption} -> ${newSortOption}`);
       setSortOption(newSortOption);
     }
   }, [externalSortOption]);
@@ -144,9 +143,6 @@ export function CategorySidebar({
         
         const result = await getCategorySubcategories(categoryId);
         setSubcategories(result.subCategories);
-      } catch (error) {
-        console.error("Error fetching subcategories:", error);
-        setSubcategories([]);
       } finally {
         setLoading(false);
       }
@@ -174,7 +170,6 @@ export function CategorySidebar({
     // 转换为数字类型传递给父组件
     if (onPriceFilterChange) {
       const numValue = value ? parseInt(value) : null;
-      console.log(`侧边栏价格筛选变化: ${numValue}, 类别: ${category}`);
       onPriceFilterChange(numValue);
     }
   };
@@ -186,7 +181,6 @@ export function CategorySidebar({
     // 转换为数字类型传递给父组件
     if (onSortChange) {
       const numValue = value === "newest" ? 1 : 2; // newest=1, popular=2
-      console.log(`侧边栏排序方式变化: ${numValue}, 类别: ${category}`);
       onSortChange(numValue);
     }
   };

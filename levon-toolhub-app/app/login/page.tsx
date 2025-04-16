@@ -22,7 +22,7 @@ export default function Login() {
       await login(email, password)
       router.push("/")
     } catch (error) {
-      console.error("Login failed:", error)
+      // 删除所有console.log, console.error等调试输出
     }
   }
 

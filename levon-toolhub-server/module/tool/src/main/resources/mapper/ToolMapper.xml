@@ -18,6 +18,7 @@
             <result property="developer" column="developer" jdbcType="VARCHAR"/>
             <result property="developerInfo" column="developer_info" jdbcType="VARCHAR"/>
             <result property="developerUrl" column="developer_url" jdbcType="VARCHAR"/>
+            <result property="developerLogo" column="developer_logo" jdbcType="VARCHAR"/>
             <result property="viewCount" column="view_count" jdbcType="BIGINT"/>
             <result property="favoriteCount" column="favorite_count" jdbcType="BIGINT"/>
             <result property="status" column="status" jdbcType="TINYINT"/>
@@ -37,7 +38,7 @@
         subcategory_id,logo,website_url,
         short_description,full_description,price_type,
         is_new,developer,developer_info,
-        developer_url,view_count,favorite_count,
+        developer_url,developer_logo,view_count,favorite_count,
         status,core_features,use_cases,
         tech_specs,purchase_suggestions,create_id,
         update_id,create_date,update_date,
@@ -59,7 +60,7 @@
         </if>
         <choose>
             <when test="sort == 1">
-                ORDER BY t.create_date DESC,t.is_new DESC
+                ORDER BY t.is_new DESC, t.heat DESC
             </when>
             <when test="sort == 2">
                 ORDER BY t.heat DESC

@@ -36,17 +36,16 @@ export default function AIToolsPage() {
   
   useEffect(() => {
     const fetchCategoryData = async () => {
-      setLoading(true)
       try {
-        const categoryData = await getCategoryById(1) // AI Tools的ID是1
-        if (categoryData) {
-          setCategory(categoryData)
-          setTotalTools(categoryData.toolCount)
-        }
+        setLoading(true);
+        // 使用api.ts中的getCategoryById函数替代自定义fetch请求
+        const categoryData = await getCategoryById(1); // 1 是AI工具的分类ID
+        setCategory(categoryData);
+        setTotalTools(categoryData?.toolCount || 0);
       } catch (error) {
-        console.error("Error fetching category data:", error)
+        console.error('获取分类数据失败:', error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
     

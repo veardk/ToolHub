@@ -75,7 +75,6 @@ export function ToolCategories() {
         setLoading(false)
       } catch (err) {
         setError("Failed to load categories")
-        console.error(err)
       } finally {
         setLoading(false)
       }

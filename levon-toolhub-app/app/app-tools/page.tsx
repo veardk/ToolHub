@@ -20,18 +20,16 @@ export default function AppToolsPage() {
   // 获取分类数据
   useEffect(() => {
     const fetchCategoryData = async () => {
-      setLoading(true)
       try {
-        // 应用工具的ID是3
-        const result = await getCategorySubcategories(3)
-        if (result && result.categoryInfo) {
-          setCategory(result.categoryInfo)
-          setTotalTools(result.categoryInfo.toolCount)
-        }
+        setLoading(true);
+        // 使用api.ts中的getCategoryById函数替代自定义fetch请求
+        const categoryData = await getCategoryById(3); // 3 是应用工具的分类ID
+        setCategory(categoryData);
+        setTotalTools(categoryData?.toolCount || 0);
       } catch (error) {
-        console.error("Error fetching category data:", error)
+        console.error('获取分类数据失败:', error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
     
@@ -43,13 +41,11 @@ export default function AppToolsPage() {
   }
   
   const handlePriceFilterChange = (value: number | null) => {
-    console.log(`AppTools页面接收到价格筛选变化: ${value}`);
     setPriceFilter(value);
   }
 
   // 处理排序方式变化
   const handleSortChange = (value: number) => {
-    console.log(`AppTools页面接收到排序方式变化: ${value}`);
     setSortOption(value);
   }
 

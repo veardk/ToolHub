@@ -45,7 +45,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(user)
       localStorage.setItem("user", JSON.stringify(user))
     } catch (error) {
-      console.error("Login failed:", error)
       throw error
     }
   }
@@ -70,7 +69,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(user)
       localStorage.setItem("user", JSON.stringify(user))
     } catch (error) {
-      console.error("Registration failed:", error)
       throw error
     }
   }

@@ -42,7 +42,7 @@ export default function Register() {
       await register(name, email, password)
       router.push("/")
     } catch (error) {
-      console.error("Registration failed:", error)
+      // 处理注册失败
     }
   }
 

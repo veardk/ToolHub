@@ -31,7 +31,6 @@ export function PopularTools() {
         setTools([...data, ...data])
       } catch (err) {
         setError("Failed to load popular tools")
-        console.error(err)
       } finally {
         setLoading(false)
       }

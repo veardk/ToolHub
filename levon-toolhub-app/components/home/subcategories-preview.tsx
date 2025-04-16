@@ -55,7 +55,6 @@ export function SubcategoriesPreview() {
         setSubcategories((prev) => ({ ...prev, [activeCategory]: data }))
       } catch (err) {
         setError("Failed to load subcategories")
-        console.error(err)
       } finally {
         setLoading(false)
       }
