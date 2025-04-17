@@ -1,4 +1,4 @@
-package com.levon.toolhub.module.tool.controller;
+package com.levon.toolhub.module.tool.controller.client;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

@@ -604,3 +604,44 @@ export async function getPopularTools(): Promise<Tool[]> {
     return [];
   }
 }
+
+/**
+ * 提交工具问题报告
+ * @param toolId 工具ID
+ * @param data 报告数据
+ * @returns 提交结果
+ */
+export async function submitToolReport(
+  toolId: number | string,
+  data: {
+    category: number;
+    description: string;
+  }
+): Promise<{
+  code: number;
+  message: string;
+  data: any;
+  success: boolean;
+  timestamp: string;
+}> {
+  try {
+    const response = await fetch(`/api/tool/${toolId}/report`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    return await response.json();
+  } catch (error) {
+    console.error('提交工具问题报告失败:', error);
+    return {
+      code: 500,
+      message: '网络错误，请稍后重试',
+      data: null,
+      success: false,
+      timestamp: new Date().toISOString(),
+    };
+  }
+}

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.levon.toolhub.module.tool.mapper.ToolReportMapper">
+
+    <resultMap id="BaseResultMap" type="com.levon.toolhub.module.tool.entity.ToolReport">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="toolId" column="tool_id" jdbcType="BIGINT"/>
+            <result property="category" column="category" jdbcType="TINYINT"/>
+            <result property="description" column="description" jdbcType="VARCHAR"/>
+            <result property="userId" column="user_id" jdbcType="BIGINT"/>
+            <result property="status" column="status" jdbcType="TINYINT"/>
+            <result property="createId" column="create_id" jdbcType="BIGINT"/>
+            <result property="updateId" column="update_id" jdbcType="BIGINT"/>
+            <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
+            <result property="updateDate" column="update_date" jdbcType="TIMESTAMP"/>
+            <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,tool_id,category,
+        description,user_id,status,
+        create_id,update_id,create_date,
+        update_date,is_delete
+    </sql>
+</mapper>

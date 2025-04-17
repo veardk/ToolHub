@@ -49,7 +49,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BizException.class)
     public ApiResponse<Void> handleBizException(BizException e) {
         log.error("业务异常: {}", e.getMessage());
-        return ApiResponse.error(e.getMessage());
+        return ApiResponse.error(e.getCode(), e.getMessage());
     }
 
     /**
@@ -125,10 +125,9 @@ public class GlobalExceptionHandler {
             fieldErrors.put(error.getField(), error.getDefaultMessage());
         }
         
-        return ApiResponse.error(ApiCode.VALIDATE_FAILED, fieldErrors);
+        return ApiResponse.error(ApiCode.VALIDATE_FAILED.getCode(),bindingResult.getFieldError().getDefaultMessage());
     }
 
-    
     /**
      * 未登录异常处理
      */

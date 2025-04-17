@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * MyBatis-Plus自动填充处理器
@@ -22,9 +22,9 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
         Long userId = getCurrentUserId();
         
         // 创建时间
-        this.strictInsertFill(metaObject, "createDate", Date.class, new Date());
+        this.strictInsertFill(metaObject, "createDate", LocalDateTime.class, LocalDateTime.now());
         // 更新时间
-        this.strictInsertFill(metaObject, "updateDate", Date.class, new Date());
+        this.strictInsertFill(metaObject, "updateDate", LocalDateTime.class, LocalDateTime.now());
         // 创建人
         this.strictInsertFill(metaObject, "createId", Long.class, userId);
         // 更新人
@@ -42,7 +42,7 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
         Long userId = getCurrentUserId();
         
         // 更新时间
-        this.strictUpdateFill(metaObject, "updateDate", Date.class, new Date());
+        this.strictUpdateFill(metaObject, "updateDate", LocalDateTime.class, LocalDateTime.now());
         // 更新人
         this.strictUpdateFill(metaObject, "updateId", Long.class, userId);
     }

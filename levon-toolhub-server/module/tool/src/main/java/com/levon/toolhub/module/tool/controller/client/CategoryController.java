@@ -1,4 +1,4 @@
-package com.levon.toolhub.module.tool.controller;
+package com.levon.toolhub.module.tool.controller.client;
 
 import com.levon.toolhub.common.model.ApiResponse;
 import com.levon.toolhub.common.model.CursorPageResult;

@@ -24,8 +24,7 @@ public enum ApiCode {
     ERROR(500, "系统内部错误"),
     SERVICE_UNAVAILABLE(503, "服务暂时不可用"),
 
-    DATA_NOT_FOUND(504, "数据未找到"),
-    
+
     /**
      * 业务错误
      */
@@ -35,6 +34,7 @@ public enum ApiCode {
     INCORRECT_CREDENTIALS(1004, "用户名或密码错误"),
     OPERATION_FAILED(1005, "操作失败"),
     DATA_ALREADY_EXISTS(1006, "数据已存在"),
+    DATA_NOT_EXISTS(1007, "数据不存在"),
     
     /**
      * 文件操作相关错误

@@ -70,10 +70,26 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog"
-import { fetchToolDetail, ToolDetailResponse } from "@/lib/api"
+import { fetchToolDetail, submitToolReport, ToolDetailResponse } from "@/lib/api"
+import ToolReportModal from "@/components/ToolReportModal"
 
 // 自定义苹果图标组件
 const AppleLogo = (props: any) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 384 512"
+    width="16"
+    height="16"
+    fill="currentColor"
+    stroke="none"
+    {...props}
+  >
+    <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/>
+  </svg>
+);
+
+// 自定义安卓图标组件
+const AndroidLogo = (props: any) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
@@ -83,19 +99,114 @@ const AppleLogo = (props: any) => (
     stroke="none"
     {...props}
   >
-    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+    <path d="M7.2,16.8a.8.8,0,0,0,.8.8h.8v2.8a1.2,1.2,0,0,0,2.4,0V17.6h1.6v2.8a1.2,1.2,0,0,0,2.4,0V17.6H16a.8.8,0,0,0,.8-.8V8H7.2Zm-2-8.8A1.2,1.2,0,0,0,4,9.2v5.6a1.2,1.2,0,0,0,2.4,0V9.2A1.2,1.2,0,0,0,5.2,8ZM18.8,8a1.2,1.2,0,0,0-1.2,1.2v5.6a1.2,1.2,0,0,0,2.4,0V9.2A1.2,1.2,0,0,0,18.8,8ZM15.46,2.08l1.17-1.17a.4.4,0,0,0,0-.57.4.4,0,0,0-.57,0L14.71,1.7A6.11,6.11,0,0,0,12,1,6.11,6.11,0,0,0,9.29,1.7L7.94.34a.4.4,0,0,0-.57,0,.4.4,0,0,0,0,.57L8.54,2.08A5.85,5.85,0,0,0,6.4,5.6H17.6A5.85,5.85,0,0,0,15.46,2.08ZM10,4.4A.8.8,0,1,1,10.8,3.6.8.8,0,0,1,10,4.4Zm4,0a.8.8,0,1,1,.8-.8A.8.8,0,0,1,14,4.4Z" />
+  </svg>
+);
+
+// 自定义Linux企鹅图标组件
+const LinuxLogo = (props: any) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 448 512"
+    width="16"
+    height="16"
+    fill="currentColor"
+    stroke="none"
+    {...props}
+  >
+    <path d="M220.8 123.3c1 .5 1.8 1.7 3 1.7 1.1 0 2.8-.4 2.9-1.5.2-1.4-1.9-2.3-3.2-2.9-1.7-.7-3.9-1-5.5-.1-.4.2-.8.7-.6 1.1.3 1.3 2.3 1.1 3.4 1.7zm-21.9 1.7c1.2 0 2-1.2 3-1.7 1.1-.6 3.1-.4 3.5-1.6.2-.4-.2-.9-.6-1.1-1.6-.9-3.8-.6-5.5.1-1.3.6-3.4 1.5-3.2 2.9.1 1 1.8 1.5 2.8 1.4zM420 403.8c-3.6-4-5.3-11.6-7.2-19.7-1.8-8.1-3.9-16.8-10.5-22.4-1.3-1.1-2.6-2.1-4-2.9-1.3-.8-2.7-1.5-4.1-2 9.2-27.3 5.6-54.5-3.7-79.1-11.4-30.1-31.3-56.4-46.5-74.4-17.1-21.5-33.7-41.9-33.4-72C311.1 85.4 315.7.1 234.8 0 132.4-.2 158 103.4 156.9 135.2c-1.7 23.4-6.4 41.8-22.5 64.7-18.9 22.5-45.5 58.8-58.1 96.7-6 17.9-8.8 36.1-6.2 53.3-6.5 5.8-11.4 14.7-16.6 20.2-4.2 4.3-10.3 5.9-17 8.3s-14 6-18.5 14.5c-2.1 3.9-2.8 8.1-2.8 12.4 0 3.9.6 7.9 1.2 11.8 1.2 8.1 2.5 15.7.8 20.8-5.2 14.4-5.9 24.4-2.2 31.7 3.8 7.3 11.4 10.5 20.1 12.3 17.3 3.6 40.8 2.7 59.3 12.5 19.8 10.4 39.9 14.1 55.9 10.4 11.6-2.6 21.1-9.6 25.9-20.2 12.5-.1 26.3-5.4 48.3-6.6 14.9-1.2 33.6 5.3 55.1 4.1.6 2.3 1.4 4.6 2.5 6.7v.1c8.3 16.7 23.8 24.3 40.3 23 16.6-1.3 34.1-11 48.3-27.9 13.6-16.4 36-23.2 50.9-32.2 7.4-4.5 13.4-10.1 13.9-18.3.4-8.2-4.4-17.3-15.5-29.7zM223.7 87.3c9.8-22.2 34.2-21.8 44-.4 6.5 14.2 3.6 30.9-4.3 40.4-1.6-.8-5.9-2.6-12.6-4.9 1.1-1.2 3.1-2.7 3.9-4.6 4.8-11.8-.2-27-9.1-27.3-7.3-.5-13.9 10.8-11.8 23-4.1-2-9.4-3.5-13-4.4-1-6.9-.3-14.6 2.9-21.8zM183 75.8c10.1 0 20.8 14.2 19.1 33.5-3.5 1-7.1 2.5-10.2 4.6 1.2-8.9-3.3-20.1-9.6-19.6-8.4.7-9.8 21.2-1.8 28.1 1 .8 1.9-.2-5.9 5.5-15.6-14.6-10.5-52.1 8.4-52.1zm-13.6 60.7c6.2-4.6 13.6-10 14.1-10.5 4.7-4.4 13.5-14.2 27.9-14.2 7.1 0 15.6 2.3 25.9 8.9 6.3 4.1 11.3 4.4 22.6 9.3 8.4 3.5 13.7 9.7 10.5 18.2-2.6 7.1-11 14.4-22.7 18.1-11.1 3.6-19.8 16-38.2 14.9-3.9-.2-7-1-9.6-2.1-8-3.5-12.2-10.4-20-15-8.6-4.8-13.2-10.4-14.7-15.3-1.4-4.9 0-9 4.2-12.3zm3.3 334c-2.7 35.1-43.9 34.4-75.3 18-29.9-15.8-68.6-6.5-76.5-21.9-2.4-4.7-2.4-12.7 2.6-26.4v-.2c2.4-7.6.6-16-.6-23.9-1.2-7.8-1.8-15 .9-20 3.5-6.7 8.5-9.1 14.8-11.3 10.3-3.7 11.8-3.4 19.6-9.9 5.5-5.7 9.5-12.9 14.3-18 5.1-5.5 10-8.1 17.7-6.9 8.1 1.2 15.1 6.8 21.9 16l19.6 35.6c9.5 19.9 43.1 48.4 41 68.9zm-1.4-25.9c-4.1-6.6-9.6-13.6-14.4-19.6 7.1 0 14.2-2.2 16.7-8.9 2.3-6.2 0-14.9-7.4-24.9-13.5-18.2-38.3-32.5-38.3-32.5-13.5-8.4-21.1-18.7-24.6-29.9s-3-23.3-.3-35.2c5.2-22.9 18.6-45.2 27.2-59.2 2.3-1.7.8 3.2-8.7 20.8-8.5 16.1-24.4 53.3-2.6 82.4.6-20.7 5.5-41.8 13.8-61.5 12-27.4 37.3-74.9 39.3-112.7 1.1.8 4.6 3.2 6.2 4.1 4.6 2.7 8.1 6.7 12.6 10.3 12.4 10 28.5 9.2 42.4 1.2 6.2-3.5 11.2-7.5 15.9-9 9.9-3.1 17.8-8.6 22.3-15 7.7 30.4 25.7 74.3 37.2 95.7 6.1 11.4 18.3 35.5 23.6 64.6 3.3-.1 7 .4 10.9 1.4 13.8-35.7-11.7-74.2-23.3-84.9-4.7-4.6-4.9-6.6-2.6-6.5 12.6 11.2 29.2 33.7 35.2 59 2.8 11.6 3.3 23.7.4 35.7 16.4 6.8 35.9 17.9 30.7 34.8-2.2-.1-3.2 0-4.2 0 3.2-10.1-3.9-17.6-22.8-26.1-19.6-8.6-36-8.6-38.3 12.5-12.1 4.2-18.3 14.7-21.4 27.3-2.8 11.2-3.6 24.7-4.4 39.9-.5 7.7-3.6 18-6.8 29-32.1 22.9-76.7 32.9-114.3 7.2zm257.4-11.5c-.9 16.8-41.2 19.9-63.2 46.5-13.2 15.7-29.4 24.4-43.6 25.5s-26.5-4.8-33.7-19.3c-4.7-11.1-2.4-23.1 1.1-36.3 3.7-14.2 9.2-28.8 9.9-40.6.8-15.2 1.7-28.5 4.2-38.7 2.6-10.3 6.6-17.2 13.7-21.1.3-.2.7-.3 1-.5.8 13.2 7.3 26.6 18.8 29.5 12.6 3.3 30.7-7.5 38.4-16.3 9-.3 15.7-.9 22.6 5.1 9.9 8.5 7.1 30.3 17.1 41.6 10.6 11.6 14 19.5 13.7 24.6zM173.3 148.7c2 1.9 4.7 4.5 8 7.1 6.6 5.2 15.8 10.6 27.3 10.6 11.6 0 22.5-5.9 31.8-10.8 4.9-2.6 10.9-7 14.8-10.4s5.9-6.3 3.1-6.6-2.6 2.6-6 5.1c-4.4 3.2-9.7 7.4-13.9 9.8-7.4 4.2-19.5 10.2-29.9 10.2s-18.7-4.8-24.9-9.7c-3.1-2.5-5.7-5-7.7-6.9-1.5-1.4-1.9-4.6-4.3-4.9-1.4-.1-1.8 3.7 1.7 6.5z"/>
+  </svg>
+);
+
+// 自定义Windows图标组件
+const WindowsLogo = (props: any) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    width="16"
+    height="16"
+    fill="currentColor"
+    stroke="none"
+    {...props}
+  >
+    <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801" />
+  </svg>
+);
+
+// 自定义Mac命令键图标组件
+const MacCommandIcon = (props: any) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    width="16"
+    height="16"
+    fill="currentColor"
+    stroke="currentColor"
+    strokeWidth="0"
+    {...props}
+  >
+    <path d="M16 5h-2c-.55 0-1 .45-1 1v2h-2V6c0-.55-.45-1-1-1H8c-.55 0-1 .45-1 1v2H5c-.55 0-1 .45-1 1v2c0 .55.45 1 1 1h2v2H5c-.55 0-1 .45-1 1v2c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-2h2v2c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-2h2c.55 0 1-.45 1-1v-2c0-.55-.45-1-1-1h-2v-2h2c.55 0 1-.45 1-1V8c0-.55-.45-1-1-1zm-4 6h-2v-2h2v2z" />
+  </svg>
+);
+
+// 自定义Macbook图标组件
+const MacbookIcon = (props: any) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    width="16"
+    height="16"
+    fill="currentColor"
+    stroke="none"
+    {...props}
+  >
+    <path d="M21 14.5V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9.5M3 18h18a1 1 0 0 0 1-1v-2.5H2V17a1 1 0 0 0 1 1Z" />
+  </svg>
+);
+
+// 自定义Mac访达(Finder)图标组件
+const MacFinderIcon = (props: any) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    width="20"
+    height="20"
+    fill="none"
+    {...props}
+  >
+    {/* 外框 */}
+    <rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" strokeWidth="1" />
+    
+    {/* 左脸填充-深色 */}
+    <path d="M2 7v10c0 2.76 2.24 5 5 5h5.5V2H7C4.24 2 2 4.24 2 7z" fill="currentColor" fillOpacity="0.25" />
+    
+    {/* 右脸填充-浅色 */}
+    <path d="M12.5 2H17c2.76 0 5 2.24 5 5v10c0 2.76-2.24 5-5 5h-4.5V2z" fill="currentColor" fillOpacity="0.08" />
+    
+    {/* 左眼 */}
+    <rect x="7" y="7" width="1.5" height="4" rx="0.75" fill="currentColor" />
+    
+    {/* 右眼 */}
+    <rect x="15.5" y="7" width="1.5" height="4" rx="0.75" fill="currentColor" />
+    
+    {/* 微笑线 */}
+    <path d="M6 15.5c0 2.5 3 4.5 6 4.5s6-2 6-4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    
+    {/* 分割线 */}
+    <path d="M12.5 2v10c0 0.28 0.22 0.5 0.5 0.5h4.5v9.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
   </svg>
 );
 
 // 平台映射表
 const PLATFORM_MAP = {
   "1": { name: "网页端", icon: Globe },
-  "2": { name: "iOS", icon: Smartphone },
-  "3": { name: "安卓", icon: Smartphone },
-  "4": { name: "Mac", icon: AppleLogo },
-  "5": { name: "Linux", icon: Server },
-  "6": { name: "Windows", icon: Monitor },
-  "7": { name: "桌面端", icon: Monitor },
+  "2": { name: "iOS", icon: AppleLogo },
+  "3": { name: "Android", icon: AndroidLogo },
+  "4": { name: "Mac", icon: MacFinderIcon },
+  "5": { name: "Linux", icon: LinuxLogo },
+  "6": { name: "Windows", icon: WindowsLogo },
+  "7": { name: "移动端", icon: Smartphone },
+  "8": { name: "桌面端", icon: Monitor },
 };
 
 // 价格类型映射
@@ -226,6 +337,7 @@ export default function ToolDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [toolDetail, setToolDetail] = useState<ToolDetailResponse | null>(null);
+  const [isReportModalOpen, setIsReportModalOpen] = useState<boolean>(false);
   
   // 获取工具详情数据
   useEffect(() => {
@@ -280,6 +392,11 @@ export default function ToolDetailPage() {
 
   // 工具基本信息
   const basicInfo = toolDetail?.basicInfo;
+  
+  // 处理"报告问题"按钮点击
+  const handleReportClick = () => {
+    setIsReportModalOpen(true)
+  }
   
   // 显示加载中状态
   if (loading) {
@@ -339,79 +456,107 @@ export default function ToolDetailPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-            <div className="md:col-span-2">
-              <div className="flex items-start space-x-6 md:space-x-8">
-                {/* 工具图标 - 移除背景和阴影 */}
-                <div className="relative h-28 w-28 rounded-xl overflow-hidden flex-shrink-0">
+          {/* 重新设计的工具详情头部 */}
+          <div className="flex flex-col lg:flex-row lg:items-center gap-8 mb-6">
+            {/* 左侧：图标和基本信息 */}
+            <div className="flex flex-col items-center lg:items-start lg:flex-row gap-6 flex-1">
+              {/* 工具图标 - 大尺寸无背景版本 */}
+              <div className="relative h-36 w-36 flex-shrink-0 flex items-center justify-center">
                   <Image
-                    src={basicInfo.logo || "/placeholder.svg?height=80&width=80"}
+                  src={basicInfo.logo || "/placeholder.svg?height=120&width=120"}
                     alt={basicInfo.name}
-                    fill
-                    className="object-cover"
+                  width={140}
+                  height={140}
+                  className="object-contain max-h-full max-w-full"
+                  priority
                   />
                 </div>
                 
-                {/* 工具信息 */}
-                <div className="flex-1">
-                  <div className="flex flex-wrap items-center gap-3 mb-3">
+              {/* 工具信息容器 */}
+              <div className="flex-1 text-center lg:text-left">
+                {/* 标题区域和标签 */}
+                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 mb-3">
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                       {basicInfo.name}
                     </h1>
                     
-                    {/* 热度标签 */}
+                  {/* 热度标签 - 更现代的渐变设计 */}
                     {basicInfo.heatLevel > 3 && (
-                      <div className="bg-gradient-to-r from-orange-400 to-red-500 text-white text-xs px-2.5 py-1 rounded-full font-medium flex items-center">
+                    <div className="bg-gradient-to-r from-orange-400 to-red-500 text-white text-xs px-2.5 py-1 rounded-full font-medium flex items-center shadow-sm">
                         <Flame className="h-3 w-3 mr-1" />
                         热门
                       </div>
                     )}
                   </div>
                   
-                  {/* 子分类标签 */}
-                  {basicInfo.subcategoryName && (
-                    <div className="mb-3">
-                      <Badge variant="secondary" className="bg-indigo-50 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400 px-3 py-1">
+                {/* 分类标签 - 更柔和的背景和边框 */}
+                <div className="flex items-center justify-center lg:justify-start gap-2 mb-3">
+                  {/* 1. 子分类标签 */}
+                  <Badge 
+                    variant="secondary" 
+                    className="bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 px-3 py-1 border border-indigo-100 dark:border-indigo-800/30"
+                  >
                         <Tag className="h-3 w-3 mr-1.5" />
-                        {basicInfo.subcategoryName}
+                    {basicInfo.subcategoryName || basicInfo.categoryName}
                       </Badge>
-                    </div>
+
+                  {/* 2. 新上线标签 - 现代风格 */}
+                  {basicInfo.isNew === 1 && (
+                    <Badge 
+                      variant="secondary"
+                      className="bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 px-3 py-1 border border-blue-100 dark:border-blue-800/30"
+                    >
+                      <Sparkles className="h-3 w-3 mr-1.5" />
+                      新上线
+                    </Badge>
                   )}
-                  
-                  <p className="text-lg text-gray-600 dark:text-gray-300 mb-5 leading-relaxed">
-                    {basicInfo.shortDescription}
-                  </p>
-                  
-                  <div className="flex flex-wrap gap-3 mb-5">
-                    {/* 价格类型标签 */}
-                    {basicInfo.priceType !== 1 && (
-                      <Badge variant="outline" className={`
-                        px-3.5 py-2 text-sm font-medium flex items-center text-gray-700 dark:text-gray-300
-                        ${basicInfo.priceType === 2 ? 'bg-gray-50 dark:bg-gray-800/70' :
-                          'bg-gray-50 dark:bg-gray-800/70'}
-                      `}>
-                        <DollarSign className="h-3.5 w-3.5 mr-1.5 text-gray-500 dark:text-gray-400" />
-                        {basicInfo.priceTypeText || PRICE_TYPE_MAP[basicInfo.priceType] || "未知"}
-                      </Badge>
-                    )}
-                    
-                    {/* 新上线标签 */}
-                    {basicInfo.isNew === 1 && (
-                      <Badge variant="outline" className="px-3.5 py-2 text-sm font-medium flex items-center bg-gray-50 text-gray-700 dark:bg-gray-800/70 dark:text-gray-300">
-                        <Sparkles className="h-3.5 w-3.5 mr-1.5 text-gray-500 dark:text-gray-400" />
-                        新上线
-                      </Badge>
+
+                  {/* 3. 价格类型标签 - 现代风格 */}
+                  {basicInfo.priceType === 1 ? (
+                    <Badge 
+                      variant="secondary"
+                      className="bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400 px-3 py-1 border border-green-100 dark:border-green-800/30"
+                    >
+                      <DollarSign className="h-3 w-3 mr-1.5" />
+                      免费
+                    </Badge>
+                  ) : basicInfo.priceType !== 1 && (
+                    <Badge 
+                      variant="secondary"
+                      className="bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 px-3 py-1 border border-amber-100 dark:border-amber-800/30"
+                    >
+                      <DollarSign className="h-3 w-3 mr-1.5" />
+                      {basicInfo.priceTypeText || PRICE_TYPE_MAP[basicInfo.priceType] || "未知"}
+                    </Badge>
+                  )}
+                </div>
+                
+                {/* 描述文本 - 改善行高和字体权重 */}
+                <p className="text-lg text-gray-600 dark:text-gray-300 mb-4 leading-relaxed max-w-2xl">
+                  {basicInfo.shortDescription}
+                </p>
+                
+                {/* 元数据行 - 采用现代清爽风格的图标和文本 */}
+                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-5 text-sm text-gray-500 dark:text-gray-400 mb-4">
+                  <div className="flex items-center">
+                    <Calendar className="h-4 w-4 mr-1.5 text-gray-400" />
+                    <span>更新: {basicInfo.updateTime}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Eye className="h-4 w-4 mr-1.5 text-gray-400" />
+                    <span>{basicInfo.viewCount || 0} 次浏览</span>
+                  </div>
+                  {basicInfo.heatDesc && (
+                    <div className="flex items-center">
+                      <TrendingUp className="h-4 w-4 mr-1.5 text-gray-400" />
+                      <span>{basicInfo.heatDesc}</span>
+                    </div>
                     )}
                   </div>
                   
-                  {/* 平台支持 */}
+                {/* 平台支持图标 - 移至最下方 */}
                   {basicInfo.platforms && basicInfo.platforms.length > 0 && (
-                    <div className="mb-5">
-                      <h3 className="text-sm font-medium mb-3 flex items-center text-gray-600 dark:text-gray-400">
-                        <Layers className="h-4 w-4 mr-1.5" />
-                        支持平台
-                      </h3>
-                      <div className="flex flex-wrap gap-3">
+                  <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 mt-2">
                         {basicInfo.platforms.map((platformId) => {
                           const platformKey = String(platformId);
                           const defaultPlatform = { name: `平台${platformKey}`, icon: Globe };
@@ -419,39 +564,26 @@ export default function ToolDetailPage() {
                           const PlatformIcon = platform.icon;
                           
                           return (
-                            <div key={platformId} className="flex items-center bg-gray-50 dark:bg-gray-800/70 px-3 py-1.5 rounded-full text-gray-700 dark:text-gray-300">
-                              <PlatformIcon className="h-4 w-4 mr-1.5 text-gray-500 dark:text-gray-400" />
-                              <span className="text-sm">{platform.name}</span>
+                        <div 
+                          key={platformId}
+                          className="flex items-center px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                        >
+                          <PlatformIcon className={`${platformKey === "4" ? "h-5 w-5" : "h-4 w-4"} text-gray-700 dark:text-gray-300 mr-1.5`} />
+                          <span className="text-sm text-gray-700 dark:text-gray-300">{platform.name}</span>
                             </div>
                           );
                         })}
-                      </div>
                     </div>
                   )}
-                  
-                  {/* 更新时间和热度 */}
-                  <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-gray-500 dark:text-gray-400">
-                    <div className="flex items-center">
-                      <Calendar className="h-4 w-4 mr-1.5" />
-                      <span>更新时间: {basicInfo.updateTime}</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Eye className="h-4 w-4 mr-1.5" />
-                      <span>浏览量: {basicInfo.viewCount || 0}</span>
-                    </div>
-                    {basicInfo.heatDesc && (
-                      <div className="flex items-center">
-                        <TrendingUp className="h-4 w-4 mr-1.5" />
-                        <span>{basicInfo.heatDesc}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
               </div>
             </div>
             
-            <div className="flex flex-col gap-3 justify-center md:justify-end">
-              <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white py-2 h-12 w-full">
+            {/* 右侧：操作按钮区域 */}
+            <div className="flex flex-col gap-3 w-full lg:w-auto lg:min-w-[220px]">
+              <Button 
+                asChild 
+                className="bg-blue-600 hover:bg-blue-700 text-white py-2 h-12 w-full shadow-md hover:shadow-lg transition-colors border-2 border-blue-600 hover:border-blue-700"
+              >
                 <Link href={basicInfo.websiteUrl} target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="h-5 w-5 mr-2" />
                   访问官网
@@ -460,14 +592,18 @@ export default function ToolDetailPage() {
               
               <div className="flex gap-3 w-full">
                 <Button 
-                  variant="outline" 
-                  className="h-12 flex-1" 
+                  variant="outline"
+                  className={`h-12 flex-1 border-2 transition-colors ${
+                    isSaved 
+                      ? 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:border-blue-700 hover:text-white' 
+                      : 'bg-white text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-blue-600 hover:border-blue-600 hover:text-white'
+                  }`}
                   onClick={toggleSave}
                 >
                   {isSaved ? (
                     <>
-                      <BookmarkCheck className="h-5 w-5 mr-2 text-blue-600" />
-                      已收藏
+                      <BookmarkCheck className="h-5 w-5 mr-2" />
+                      收藏
                     </>
                   ) : (
                     <>
@@ -479,48 +615,16 @@ export default function ToolDetailPage() {
                 
                 <ShareButtons toolName={basicInfo.name} />
                 
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" size="icon" className="h-12 w-12">
-                      <AlertCircle className="h-5 w-5" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>报告问题</DialogTitle>
-                      <DialogDescription>
-                        如果您发现该工具信息有误或链接失效，请告知我们。
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <label htmlFor="issue" className="text-right">
-                          问题类型
-                        </label>
-                        <select id="issue" className="col-span-3 bg-transparent border border-gray-300 dark:border-gray-700 rounded-md p-2">
-                          <option>信息错误</option>
-                          <option>链接失效</option>
-                          <option>内容过时</option>
-                          <option>其他问题</option>
-                        </select>
-                      </div>
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <label htmlFor="description" className="text-right">
-                          详细描述
-                        </label>
-                        <textarea 
-                          id="description" 
-                          className="col-span-3 bg-transparent border border-gray-300 dark:border-gray-700 rounded-md p-2"
-                          rows={5}
-                          placeholder="请详细描述您发现的问题..."
-                        />
-                      </div>
-                    </div>
-                    <DialogFooter>
-                      <Button type="submit">提交报告</Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  className="h-12 w-12 border-2 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
+                  onClick={handleReportClick}
+                  aria-label="报告问题"
+                  title="报告问题"
+                >
+                  <AlertCircle className="h-5 w-5" />
+                </Button>
               </div>
             </div>
           </div>
@@ -536,7 +640,7 @@ export default function ToolDetailPage() {
               <TabsList className={`grid w-full ${basicInfo.priceType === 1 ? 'grid-cols-2' : 'grid-cols-3'}`}>
                 <TabsTrigger value="overview">概述</TabsTrigger>
                 {basicInfo.priceType !== 1 && (
-                  <TabsTrigger value="pricing">价格</TabsTrigger>
+                <TabsTrigger value="pricing">价格</TabsTrigger>
                 )}
                 <TabsTrigger value="reviews">评论</TabsTrigger>
               </TabsList>
@@ -662,59 +766,59 @@ export default function ToolDetailPage() {
                         </div>
                       </div>
                     ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {toolDetail.pricePlans
-                          .sort((a, b) => a.sortOrder - b.sortOrder)
-                          .map((plan) => (
-                            <div 
-                              key={plan.id}
-                              className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border-2 ${
-                                plan.planCode === 'plus' ? 'border-blue-500 dark:border-blue-400' : 'border-transparent'
-                              }`}
-                            >
-                              {plan.planCode === 'plus' && (
-                                <div className="bg-blue-500 text-white text-center text-sm py-1">
-                                  推荐方案
-                                </div>
-                              )}
-                              <div className="p-6">
-                                <h3 className="text-xl font-bold mb-2">{plan.planName}</h3>
-                                <div className="flex items-baseline mb-4">
-                                  <span className="text-3xl font-bold">
-                                    {plan.price !== null ? `¥${plan.price}` : '定制'}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {toolDetail.pricePlans
+                        .sort((a, b) => a.sortOrder - b.sortOrder)
+                        .map((plan) => (
+                          <div 
+                            key={plan.id}
+                            className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border-2 ${
+                              plan.planCode === 'plus' ? 'border-blue-500 dark:border-blue-400' : 'border-transparent'
+                            }`}
+                          >
+                            {plan.planCode === 'plus' && (
+                              <div className="bg-blue-500 text-white text-center text-sm py-1">
+                                推荐方案
+                              </div>
+                            )}
+                            <div className="p-6">
+                              <h3 className="text-xl font-bold mb-2">{plan.planName}</h3>
+                              <div className="flex items-baseline mb-4">
+                                <span className="text-3xl font-bold">
+                                  {plan.price !== null ? `¥${plan.price}` : '定制'}
+                                </span>
+                                {plan.customPeriod && (
+                                  <span className="text-gray-500 dark:text-gray-400 ml-2">
+                                    {plan.customPeriod}
                                   </span>
-                                  {plan.customPeriod && (
-                                    <span className="text-gray-500 dark:text-gray-400 ml-2">
-                                      {plan.customPeriod}
-                                    </span>
-                                  )}
-                                </div>
-                                {plan.description && (
-                                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                                    {plan.description}
-                                  </p>
                                 )}
-                                <div className="space-y-3">
-                                  {plan.features
-                                    .sort((a, b) => a.sortOrder - b.sortOrder)
-                                    .map((feature, idx) => (
-                                      <div key={idx} className="flex items-start">
-                                        <div className="flex-shrink-0 h-5 w-5 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mt-0.5 mr-2">
-                                          <Check className="h-3 w-3 text-blue-600 dark:text-blue-400" />
-                                        </div>
-                                        <div>
-                                          <span className="text-gray-800 dark:text-gray-200 block">{feature.featureTitle}</span>
-                                          {feature.featureDescription && (
-                                            <span className="text-xs text-gray-500 dark:text-gray-400">{feature.featureDescription}</span>
-                                          )}
-                                        </div>
+                              </div>
+                              {plan.description && (
+                                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                                  {plan.description}
+                                </p>
+                              )}
+                              <div className="space-y-3">
+                                {plan.features
+                                  .sort((a, b) => a.sortOrder - b.sortOrder)
+                                  .map((feature, idx) => (
+                                    <div key={idx} className="flex items-start">
+                                      <div className="flex-shrink-0 h-5 w-5 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mt-0.5 mr-2">
+                                        <Check className="h-3 w-3 text-blue-600 dark:text-blue-400" />
                                       </div>
-                                    ))}
-                                </div>
+                                      <div>
+                                        <span className="text-gray-800 dark:text-gray-200 block">{feature.featureTitle}</span>
+                                        {feature.featureDescription && (
+                                          <span className="text-xs text-gray-500 dark:text-gray-400">{feature.featureDescription}</span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  ))}
                               </div>
                             </div>
-                          ))}
-                      </div>
+                          </div>
+                        ))}
+                    </div>
                     )}
                   </div>
                   
@@ -778,9 +882,9 @@ export default function ToolDetailPage() {
                       <h2 className="text-2xl font-bold mb-6">购买建议</h2>
                       
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {toolDetail.purchaseSuggestions
-                          .sort((a, b) => a.sortOrder - b.sortOrder)
-                          .map((suggestion, idx) => (
+                              {toolDetail.purchaseSuggestions
+                                .sort((a, b) => a.sortOrder - b.sortOrder)
+                                .map((suggestion, idx) => (
                             <div 
                               key={idx}
                               className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
@@ -788,17 +892,17 @@ export default function ToolDetailPage() {
                               <div className="p-6">
                                 <h3 className="text-xl font-bold mb-4">{suggestion.userType}</h3>
                                 <div className="space-y-3">
-                                  {suggestion.suggestionPoints.map((point, pidx) => (
+                                      {suggestion.suggestionPoints.map((point, pidx) => (
                                     <div key={pidx} className="flex items-start">
                                       <div className="flex-shrink-0 h-5 w-5 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mt-0.5 mr-2">
                                         <Check className="h-3 w-3 text-blue-600 dark:text-blue-400" />
                                       </div>
                                       <span className="text-gray-800 dark:text-gray-200">{point}</span>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
+                                  </div>
+                                ))}
                             </div>
+                          </div>
+                        </div>
                           ))}
                       </div>
                     </div>
@@ -904,8 +1008,8 @@ export default function ToolDetailPage() {
                         />
                       ) : (
                         <Avatar className="h-16 w-16 rounded-md">
-                          <AvatarFallback className="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-semibold text-lg">{basicInfo.developer?.charAt(0) || "D"}</AvatarFallback>
-                        </Avatar>
+                        <AvatarFallback className="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-semibold text-lg">{basicInfo.developer?.charAt(0) || "D"}</AvatarFallback>
+                    </Avatar>
                       )}
                     </div>
                     <div>
@@ -1014,19 +1118,12 @@ export default function ToolDetailPage() {
         </div>
       </main>
 
-      {/* 固定在页面右下角的快速操作浮动按钮 */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <div className="flex flex-col gap-3">
-          <Button 
-            variant="default" 
-            size="icon" 
-            className="h-12 w-12 rounded-full shadow-lg bg-blue-600 hover:bg-blue-700"
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          >
-            <ArrowLeft className="h-5 w-5 rotate-90" />
-          </Button>
-        </div>
-      </div>
+      {/* 工具问题报告模态框 */}
+      <ToolReportModal
+        toolId={params?.id || ""}
+        isOpen={isReportModalOpen}
+        onOpenChange={setIsReportModalOpen}
+      />
     </div>
   )
 } 

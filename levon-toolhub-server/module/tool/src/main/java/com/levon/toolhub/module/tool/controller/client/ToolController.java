@@ -1,15 +1,11 @@
-package com.levon.toolhub.module.tool.controller;
+package com.levon.toolhub.module.tool.controller.client;
 
 import com.levon.toolhub.common.model.ApiResponse;
-import com.levon.toolhub.common.model.CursorPageResult;
-import com.levon.toolhub.module.tool.dto.request.client.ToolPageRequest;
-import com.levon.toolhub.module.tool.dto.response.client.ToolBriefResponse;
 import com.levon.toolhub.module.tool.dto.response.client.ToolDetailResponse;
 import com.levon.toolhub.module.tool.service.ToolService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**

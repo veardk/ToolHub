@@ -163,11 +163,11 @@ public class ToolServiceImpl extends ServiceImpl<ToolMapper, Tool>
         Tool tool = getById(id);
         if (tool == null) {
             log.warn("工具不存在, id: {}", id);
-            throw new BizException(ApiCode.DATA_NOT_FOUND.getCode(), "工具未找到");
+            throw new BizException(ApiCode.DATA_NOT_EXISTS.getCode(), "工具未找到");
         }
         
         // TODO 更新查看次数（异步处理，不影响当前查询）
-        updateViewCount(id);
+//        updateViewCount(id);
         
         // 查询分类信息
         Category category = categoryMapper.selectById(tool.getCategoryId());
