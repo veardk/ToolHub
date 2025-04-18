@@ -96,6 +96,14 @@
             <optional>true</optional>
         </dependency>
         
+        <!-- XXL-Job分布式任务调度 -->
+        <dependency>
+            <groupId>com.xuxueli</groupId>
+            <artifactId>xxl-job-core</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        
         <!-- 对象映射 -->
         <dependency>
             <groupId>org.mapstruct</groupId>
