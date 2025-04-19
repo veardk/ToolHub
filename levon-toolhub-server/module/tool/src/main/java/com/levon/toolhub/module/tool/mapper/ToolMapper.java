@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Update;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -61,6 +62,26 @@ public interface ToolMapper extends BaseMapper<Tool> {
      */
     @Update("UPDATE levon_toolhub_tool SET view_count = view_count + 1, heat = heat + 1 WHERE id = #{id}")
     int incrementViewCount(@Param("id") Long id);
+
+    /**
+     * 查询所有需要更新热度的工具（全量更新，考虑热度衰减）
+     * 
+     * @return 所有未删除的工具列表
+     */
+    List<Tool> findAllToolsForHeatUpdate();
+
+    /**
+     * 查询需要更新热度的工具列表
+     * 
+     * 包含以下情况的工具：
+     * 1. 在指定时间范围内新创建的工具
+     * 2. 在指定时间范围内基本信息被更新的工具
+     *
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @return 需要更新热度的工具列表
+     */
+    List<Tool> findToolsNeedUpdateHeat(@Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 
 }
 

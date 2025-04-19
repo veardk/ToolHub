@@ -31,6 +31,9 @@
             <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
             <result property="updateDate" column="update_date" jdbcType="TIMESTAMP"/>
             <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
+            <result property="heat" column="heat" jdbcType="BIGINT"/>
+            <result property="heatDesc" column="heat_desc" jdbcType="VARCHAR"/>
+            <result property="heatLevel" column="heat_level" jdbcType="TINYINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -42,7 +45,7 @@
         status,core_features,use_cases,
         tech_specs,purchase_suggestions,create_id,
         update_id,create_date,update_date,
-        is_delete
+        is_delete,heat,heat_desc,heat_level
     </sql>
 
     <!-- 根据分类ID查询工具列表 -->
@@ -81,5 +84,34 @@
         <if test="priceType != null">
             AND t.price_type = #{priceType}
         </if>
+    </select>
+
+    <!-- 需要更新热度的工具字段列表 -->
+    <sql id="Heat_Update_Fields">
+        t.id, t.name, t.view_count, t.favorite_count, t.create_date, t.heat, t.heat_desc, t.heat_level
+    </sql>
+    
+    <!-- 查询所有需要更新热度的工具（全量更新，考虑热度衰减） -->
+    <select id="findAllToolsForHeatUpdate" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Heat_Update_Fields"/>
+        FROM levon_toolhub_tool t
+        WHERE t.is_delete = 0
+        ORDER BY t.id ASC
+    </select>
+    
+    <!-- 查询在指定时间范围内需要更新热度的工具 -->
+    <select id="findToolsNeedUpdateHeat" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Heat_Update_Fields"/>
+        FROM levon_toolhub_tool t
+        WHERE t.is_delete = 0
+        AND (
+            <!-- 在指定时间范围内更新过的工具 -->
+            (t.update_date BETWEEN #{startTime} AND #{endTime})
+            <!-- 在指定时间范围内创建的工具 -->
+            OR (t.create_date BETWEEN #{startTime} AND #{endTime})
+        )
+        ORDER BY t.id ASC
     </select>
 </mapper>
